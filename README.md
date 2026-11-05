@@ -1,0 +1,92 @@
+# Immigration Helper (USCIS Form Helper)
+
+> **Disclaimer:** This project is a class project, not legal advice. Always confirm answers
+> against the official instructions on [uscis.gov](https://www.uscis.gov) or with an immigration attorney.
+
+## Problem
+
+USCIS paperwork is repetitive and the guidance is scattered across long PDF instructions full of
+specialized jargon ("EAD", "adjustment of status", "eligibility category (c)(9)", "A-Number").
+Applicants re-type the same information on every form and struggle to find the answer to
+form-specific questions, which leads to costly mistakes.
+
+## What it does
+
+1. **Form Q&A (core concept: Embeddings / RAG)** — answers questions about a form using only the
+   official USCIS instructions, and cites the form, Part and edition date the answer came from.
+   If the retrieved text doesn't support an answer, it says so instead of guessing.
+2. **Document vault** — keeps the user's recurring documents (passport, I-94, green card,
+   receipt notices) locally so the same data can be reused across forms.
+
+## Retrieval design
+
+USCIS instructions use jargon and exact codes that plain embedding search handles poorly, so
+retrieval is built in layers, and each layer is measured against a test set of questions:
+
+| Layer | Handles |
+|---|---|
+| Section-aware chunking with a context header (`Form I-765 > Part 2 > Item 27`) on every chunk | Chunks that make no sense out of context |
+| LLM query rewriting using the USCIS glossary ("work permit" → "Employment Authorization Document, Form I-765") | Plain-language questions vs. official terms |
+| Hybrid search: dense embeddings + BM25 keyword search, merged with reciprocal rank fusion | Exact codes and form numbers (`I-765`, `(c)(8)`) |
+| Reranking the top candidates with a cross-encoder | Picking the best passage among close matches |
+
+**Evaluation:** ~30 questions with known answer sections, scored by Recall@5 and MRR, compared against
+a keyword-only baseline.
+
+## Planned stack
+
+- Python, `pymupdf` for PDF parsing
+- Embeddings: OpenAI `text-embedding-3-small` / `-large` (compared against a local model)
+- Vector store: Chroma (local)
+- Keyword search: `rank_bm25`
+
+## Getting started
+
+```bash
+python -m venv .venv
+.venv/Scripts/pip install -r requirements.txt   # macOS/Linux: .venv/bin/pip
+.venv/Scripts/python -m immigration_helper.ingestion   # chunks data/forms/*instr.pdf -> data/index/chunks.jsonl
+.venv/Scripts/python -m pytest
+```
+
+## Ingestion and chunking
+
+`InstructionReader` uses the PDFs' consistent font layout to classify each paragraph: 12pt bold is a
+section, a short fully bold Title Case line is a subsection ("Part 2.  Information About You"), 9pt text is the
+page header (where the edition date is read from), and everything before the first section is the cover and
+table of contents.
+
+`SectionChunker` then starts a new chunk at every heading and every labeled list entry ("Item Number 8.",
+an eligibility category like "3. Temporary Protected Status--(a)(12) and (c)(19).", and nested "A." / "(1)"
+sub-entries). Every chunk keeps its full heading path, which is prepended before embedding, e.g.:
+
+```
+Form I-765, Instructions for Application for Employment Authorization > Who May File Form I-765?
+> Adjustment of Status Categories > 1. Adjustment Applicant under Section 245--(c)(9).
+```
+
+Known limitation: when a PDF resumes a numbered list after a subsection without a new heading, the following
+entries inherit that subsection in their path.
+
+## Repository layout
+
+```
+immigration_helper/
+  models.py     FormId, Chunk
+  ingestion/    PDF reading, chunking, chunk storage
+tests/
+data/
+  forms/      official USCIS PDFs (see data/README.md)
+  personal/   user's own documents (git-ignored)
+  index/      generated chunks and vector store (git-ignored)
+```
+
+## Milestones
+
+- [ ] Download form instructions and record edition dates
+- [ ] Ingestion: parse PDFs, chunk by section, embed into Chroma
+- [ ] Basic Q&A with citations
+- [ ] Test set of ~30 questions + Recall@5 / MRR evaluation
+- [ ] Hybrid search, query rewriting, reranking (measure each)
+- [ ] Document vault
+- [ ] Cost measurements, screenshots, report and slides
