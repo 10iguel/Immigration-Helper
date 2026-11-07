@@ -30,15 +30,31 @@ retrieval is built in layers, and each layer is measured against a test set of q
 | Hybrid search: dense embeddings + BM25 keyword search, merged with reciprocal rank fusion | Exact codes and form numbers (`I-765`, `(c)(8)`) |
 | Reranking the top candidates with a cross-encoder | Picking the best passage among close matches |
 
-**Evaluation:** ~30 questions with known answer sections, scored by Recall@5 and MRR, compared against
-a keyword-only baseline.
+**Evaluation:** [`data/eval/eval_set.json`](data/eval/eval_set.json) has 31 answer targets across the four
+forms. Each is asked twice, once in plain words ("Can I get permission to work while I wait?") and once in
+USCIS jargon ("How do I file Form I-765 under category (c)(9)?"), so comparing the pair shows how much the
+vocabulary gap hurts retrieval. The targets include harder cases on purpose: deadlines and numbers (t19, t25,
+t26), negative questions such as "who may *not* file" (t27–t29), passages repeated in two places (t30), and
+category-specific exceptions that override a general rule (t31 vs. t20). Five more questions aren't answered by
+any loaded instructions (o01–o05; o04 and o05 are close to the topic, about fees and processing times) and test
+whether the app admits it doesn't know.
+
+Answers are labeled with phrases copied from the official text, not chunk IDs, so the same labels work for any
+chunking strategy: a chunk is relevant if it comes from the right form and contains one of the phrases.
+Retrieval will be scored by Recall@5 and MRR, compared against a keyword-only baseline. To check that every
+target still matches a chunk after changing the chunker:
+
+```bash
+.venv/Scripts/python -m immigration_helper.evaluation
+```
 
 ## Planned stack
 
 - Python, `pymupdf` for PDF parsing
-- Embeddings: OpenAI `text-embedding-3-small` / `-large` (compared against a local model)
+- OpenAI for both embeddings (`text-embedding-3-small`, compared against `-large`) and answer generation
 - Vector store: Chroma (local)
 - Keyword search: `rank_bm25`
+- The API key is read from `OPENAI_API_KEY` in a git-ignored `.env` file
 
 ## Getting started
 

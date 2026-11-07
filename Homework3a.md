@@ -71,7 +71,13 @@ allowlists on tool calls, output filtering, and human review on any action that 
 
 ## Final Project Status
 
-- 
+- I created the GitHub repository for my USCIS Form Helper, with Embeddings (RAG) as the core concept, and set it up
+with a README, a `.gitignore` that keeps API keys and personal
+documents out of the repo, and the official forms and instructions for I-130, I-131, I-485, and I-765. I finished the
+ingestion and chunking step: a reader uses the PDFs' font layout to find sections, Parts, and edition dates, and a
+chunker splits the text at every heading, "Item Number", and eligibility category, producing 465 chunks.
+Each chunk keeps its full heading path, which will be added before embedding so passages full of USCIS jargon keep
+their context, plus its form, edition, and pages for citations, and the chunker is covered by unit tests.
 
 ## How many hours you spent on the homework
 
