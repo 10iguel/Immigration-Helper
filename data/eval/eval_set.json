@@ -1,0 +1,327 @@
+{
+  "targets": [
+    {
+      "id": "t01",
+      "form": "I-765",
+      "questions": {
+        "plain": "My green card application is still being processed. Can I get permission to work while I wait?",
+        "jargon": "How do I file Form I-765 under eligibility category (c)(9) with a pending Form I-485?"
+      },
+      "answer_phrases": ["Adjustment Applicant under Section 245--(c)(9)"],
+      "reference_answer": "Yes. File Form I-765 under category (c)(9) together with Form I-485, or, if filing separately, include a copy of the Form I-485 receipt notice or other evidence that it is pending."
+    },
+    {
+      "id": "t02",
+      "form": "I-765",
+      "questions": {
+        "plain": "I applied for asylum. How long do I have to wait before I can ask for a work permit?",
+        "jargon": "When can a (c)(8) applicant file Form I-765 under the 180-day asylum EAD clock?"
+      },
+      "answer_phrases": ["You are subject to a 150-day waiting period after the filing of your asylum application"],
+      "reference_answer": "You must wait 150 days after filing a complete asylum application before applying for an EAD, and USCIS needs 30 more days before it can issue one (180 days total). Delays you cause or request don't count."
+    },
+    {
+      "id": "t03",
+      "form": "I-765",
+      "questions": {
+        "plain": "My work permit card was stolen. Which reason for applying do I pick on the application?",
+        "jargon": "Which Item Number in Part 1 of Form I-765 do I select to request a replacement EAD?"
+      },
+      "answer_phrases": ["Item Number 1.b. Replacement of a lost, stolen, or damaged EAD"],
+      "reference_answer": "Part 1, Item Number 1.b.: replacement of a lost, stolen, or damaged EAD."
+    },
+    {
+      "id": "t04",
+      "form": "I-765",
+      "questions": {
+        "plain": "The work permit form asks for a number that starts with the letter A. What is it and where do I find it?",
+        "jargon": "What do I enter for the Alien Registration Number (A-Number) in Part 2 of Form I-765?"
+      },
+      "answer_phrases": ["It begins with an \"A\" and can be found on correspondence"],
+      "reference_answer": "Your A-Number. It begins with an \"A\" and appears on correspondence from DHS or USCIS. If you don't have one, enter \"N/A.\""
+    },
+    {
+      "id": "t05",
+      "form": "I-765",
+      "questions": {
+        "plain": "I flew into the country and never got a paper arrival record. Where do I get the arrival number the work permit form asks for?",
+        "jargon": "Where do I obtain my electronic Form I-94 number for Part 2, Item Number 17 of Form I-765?"
+      },
+      "answer_phrases": ["www.cbp.gov/i94"],
+      "reference_answer": "If CBP admitted you at an airport or seaport after April 30, 2013, it may have issued an electronic Form I-94. Get it from www.cbp.gov/i94."
+    },
+    {
+      "id": "t06",
+      "form": "I-765",
+      "questions": {
+        "plain": "I'm a foreign student with an engineering degree doing practical training after graduation. Can I extend it?",
+        "jargon": "When should I file Form I-765 for the 24-month STEM OPT extension under category (c)(3)(C)?"
+      },
+      "answer_phrases": ["24-Month Extension for STEM Students"],
+      "reference_answer": "Yes, with the 24-month STEM extension (category (c)(3)(C)). File up to 90 days before your current OPT expires, with evidence that your degree is on the STEM Designated Degree Program List and your employer's E-Verify information."
+    },
+    {
+      "id": "t07",
+      "form": "I-765",
+      "questions": {
+        "plain": "My spouse works in the US on a specialty-occupation work visa. Can I get permission to work too?",
+        "jargon": "What documents does an H-4 spouse submit with Form I-765 under category (c)(26)?"
+      },
+      "answer_phrases": ["Spouse of an H-1B Nonimmigrant--(c)(26)"],
+      "reference_answer": "Possibly, under category (c)(26). Submit proof of your current H-4 status and evidence that your H-1B spouse is the beneficiary of an approved Form I-140 or received H-1B status under AC21 sections 106(a) and (b)."
+    },
+    {
+      "id": "t08",
+      "form": "I-485",
+      "questions": {
+        "plain": "I have a family trip to Mexico while my green card case is pending. Is that a problem?",
+        "jargon": "Will USCIS consider my Form I-485 abandoned if I travel abroad without an Advance Parole Document?"
+      },
+      "answer_phrases": ["USCIS will consider your application as abandoned unless"],
+      "reference_answer": "Yes. Traveling anywhere outside the US, even briefly to Canada or Mexico, abandons a pending section 245 application unless you first obtain an Advance Parole Document (Form I-131), you are an H-1B/H-4, L, V, or K-3/K-4 nonimmigrant maintaining status, or you are a TPS beneficiary traveling with authorization."
+    },
+    {
+      "id": "t09",
+      "form": "I-485",
+      "questions": {
+        "plain": "Do I need to see a doctor as part of my green card application?",
+        "jargon": "Must Form I-693 be submitted together with Form I-485?"
+      },
+      "answer_phrases": ["Report of Immigration Medical Examination and Vaccination Record (Form I-693) Applicants for adjustment of status"],
+      "reference_answer": "Generally yes. Submit Form I-693, signed by a civil surgeon, with your Form I-485, or the application may be rejected."
+    },
+    {
+      "id": "t10",
+      "form": "I-485",
+      "questions": {
+        "plain": "Does someone have to prove they can support me financially for me to get a green card?",
+        "jargon": "Who must submit Form I-864 under INA section 213A with an adjustment of status application?"
+      },
+      "answer_phrases": ["The Affidavit of Support Under Section 213A of the INA is required for most family-based"],
+      "reference_answer": "Most family-based and some employment-based immigrants need an Affidavit of Support (Form I-864, or I-864EZ in some cases) showing adequate financial support so they are not likely to become a public charge."
+    },
+    {
+      "id": "t11",
+      "form": "I-485",
+      "questions": {
+        "plain": "I was arrested years ago but never charged. Do I have to send anything about it with my green card application?",
+        "jargon": "What certified police and court records must accompany Form I-485 for an arrest where no charges were filed?"
+      },
+      "answer_phrases": ["If you were EVER arrested or detained by a law enforcement officer for any reason"],
+      "reference_answer": "Yes. Submit an original or certified copy of the complete arrest report, plus an official statement from the arresting agency or prosecutor's office, or a court order, showing the final disposition."
+    },
+    {
+      "id": "t12",
+      "form": "I-485",
+      "questions": {
+        "plain": "Can my spouse and kids get green cards through my application?",
+        "jargon": "When may a derivative applicant file Form I-485 relative to the principal applicant?"
+      },
+      "answer_phrases": ["If you are currently the spouse or child of a principal applicant, you may file Form I-485"],
+      "reference_answer": "Yes, as derivative applicants, if an immigrant visa is immediately available. Each must file their own Form I-485: at the same time as you, while yours is pending, or after it is approved if you are still a permanent resident."
+    },
+    {
+      "id": "t13",
+      "form": "I-131",
+      "questions": {
+        "plain": "I have a green card and need to live abroad for about 18 months for work. How do I make sure I can come back?",
+        "jargon": "How long is a Reentry Permit valid for a lawful permanent resident?"
+      },
+      "answer_phrases": [
+        "Reentry Permit issued to a lawful permanent resident is valid for 2 years",
+        "without the need to obtain a returning resident visa"
+      ],
+      "reference_answer": "Apply for a Reentry Permit on Form I-131 while physically present in the US. It is generally valid for 2 years, or 1 year if you have been outside the US more than 4 of the last 5 years since becoming a permanent resident."
+    },
+    {
+      "id": "t14",
+      "form": "I-131",
+      "questions": {
+        "plain": "I was granted asylum here. Is it risky to visit my home country?",
+        "jargon": "Can asylum status be terminated for voluntary re-availment under INA section 208(c)(2)(D)?"
+      },
+      "answer_phrases": ["voluntarily availed themselves of the protection of their country of nationality"],
+      "reference_answer": "Yes. If you applied for asylum on or after April 1, 1997, your asylum status may be terminated if you voluntarily avail yourself of the protection of your country of nationality, for example by traveling there."
+    },
+    {
+      "id": "t15",
+      "form": "I-130",
+      "questions": {
+        "plain": "I'm a US citizen. Can I sponsor my brother to move here?",
+        "jargon": "Which relatives may a U.S. citizen petitioner file Form I-130 for, including siblings?"
+      },
+      "answer_phrases": ["Your brothers or sisters (you must be 21 years of age or older)"],
+      "reference_answer": "Yes. A U.S. citizen who is at least 21 years old may file Form I-130 for a brother or sister."
+    },
+    {
+      "id": "t16",
+      "form": "I-130",
+      "questions": {
+        "plain": "What do I need to send to prove my marriage is real when sponsoring my spouse?",
+        "jargon": "What evidence of the spousal relationship must accompany Form I-130?"
+      },
+      "answer_phrases": ["A spouse: (1) A copy of your marriage certificate"],
+      "reference_answer": "A copy of your marriage certificate, documents showing any prior marriages were legally terminated, and two identical color passport-style photos of you and your spouse."
+    },
+    {
+      "id": "t17",
+      "form": "I-130",
+      "questions": {
+        "plain": "Once my petition for my mom is approved, can she move here right away?",
+        "jargon": "Does an approved Form I-130 grant the beneficiary lawful permanent resident status?"
+      },
+      "answer_phrases": [
+        "An approved petition does not give the beneficiary automatic lawful permanent resident status",
+        "these persons are classified as immediate relatives"
+      ],
+      "reference_answer": "No. Approval does not grant permanent residence or permission to immigrate immediately. Parents of a U.S. citizen are immediate relatives, so a visa is immediately available, but they still must apply for it."
+    },
+    {
+      "id": "t18",
+      "form": "I-130",
+      "questions": {
+        "plain": "My name doesn't match my birth certificate anymore because I got married. What should I include with the petition?",
+        "jargon": "What legal documents reflecting a name change must accompany Form I-130?"
+      },
+      "answer_phrases": ["copies of the legal documents reflecting the name change"],
+      "reference_answer": "Copies of the legal documents showing the name change, such as a marriage certificate, adoption decree, or court order."
+    },
+    {
+      "id": "t19",
+      "form": "I-765",
+      "questions": {
+        "plain": "I'm finishing my degree on a student visa. When can I apply to work after I graduate?",
+        "jargon": "What is the filing window for post-completion OPT under category (c)(3)(B)?"
+      },
+      "answer_phrases": ["Post-Completion OPT--(c)(3)(B)"],
+      "reference_answer": "File Form I-765 up to 90 days before, but no later than 60 days after, your program end date. Your DSO must first enter the OPT recommendation in SEVIS, and you must file within 30 days of that recommendation."
+    },
+    {
+      "id": "t20",
+      "form": "I-485",
+      "questions": {
+        "plain": "What kind of copy of my birth certificate do I send with my green card application?",
+        "jargon": "What birth certificate does USCIS accept as initial evidence for Form I-485?"
+      },
+      "answer_phrases": ["USCIS will only accept a birth certificate which lists at least one parent"],
+      "reference_answer": "A photocopy of your birth certificate issued by the civil authority in your country of birth. USCIS only accepts a birth certificate that lists at least one parent."
+    },
+    {
+      "id": "t21",
+      "form": "I-485",
+      "questions": {
+        "plain": "I'm married to a US citizen. Do I have to wait for my spouse's petition to be approved before applying for my green card?",
+        "jargon": "Can an immediate relative concurrently file Form I-485 with Form I-130?"
+      },
+      "answer_phrases": ["If you are an immediate relative, you may file your Form I-485 together with your Form I-130"],
+      "reference_answer": "No. Immediate relatives may file Form I-485 together with Form I-130, while Form I-130 is pending, or after it is approved."
+    },
+    {
+      "id": "t22",
+      "form": "I-131",
+      "questions": {
+        "plain": "I have a green card and I'm already overseas. Can I apply from abroad for a permit to come back?",
+        "jargon": "Must a lawful permanent resident be physically present in the United States to file for a Reentry Permit?"
+      },
+      "answer_phrases": ["The alien must be physically present in the United States when they file the Reentry Permit application"],
+      "reference_answer": "No. You must be physically present in the US when you file for a Reentry Permit and complete the biometrics appointment. The permit can later be sent to a U.S. Embassy, Consulate, or USCIS office abroad."
+    },
+    {
+      "id": "t23",
+      "form": "I-130",
+      "questions": {
+        "plain": "We've been married for less than two years. Will my spouse get a normal green card?",
+        "jargon": "When does a spouse beneficiary receive conditional permanent resident status under INA section 216?"
+      },
+      "answer_phrases": ["If you have been married less than two years on the date your spouse has obtained permanent resident status"],
+      "reference_answer": "If you have been married less than two years when your spouse becomes a permanent resident, they receive conditional permanent residence for two years. You both then file Form I-751 during the 90 days before it expires."
+    },
+    {
+      "id": "t24",
+      "form": "I-485",
+      "questions": {
+        "plain": "My birth certificate is in Spanish. Do I need to get it translated?",
+        "jargon": "What are the certified English translation requirements for foreign-language documents submitted with Form I-485?"
+      },
+      "answer_phrases": ["you must also submit a full English translation"],
+      "reference_answer": "Yes. Submit a full English translation with the copy of the document. The translator must certify that the translation is complete and accurate and that they are competent to translate, and include their signature, printed name, the date, and contact information."
+    },
+    {
+      "id": "t25",
+      "form": "I-765",
+      "questions": {
+        "plain": "The asylum office told me they plan to approve my case. Do I still have to wait months to ask for a work permit?",
+        "jargon": "Does a (c)(8) applicant with a Recommended Approval notice have to wait out the 150-day waiting period?"
+      },
+      "answer_phrases": ["you do not need to wait 150 days and may apply for an EAD immediately"],
+      "reference_answer": "No. With a Recommended Approval notice from the asylum office you can apply for an EAD immediately. Include a copy of the notice with Form I-765."
+    },
+    {
+      "id": "t26",
+      "form": "I-131",
+      "questions": {
+        "plain": "I've spent most of the last few years outside the US on my green card. Will I still get a full reentry permit?",
+        "jargon": "When is the validity of a Reentry Permit limited to 1 year?"
+      },
+      "answer_phrases": ["we will limit the permit to 1 year"],
+      "reference_answer": "If you have been outside the US for more than 4 of the last 5 years since becoming a permanent resident, the permit is generally limited to 1 year, with exceptions such as travel on U.S. Government orders."
+    },
+    {
+      "id": "t27",
+      "form": "I-765",
+      "questions": {
+        "plain": "I already have a green card. Should I fill out the work permit application to prove I can work?",
+        "jargon": "May a lawful permanent resident use Form I-765 to obtain an EAD?"
+      },
+      "answer_phrases": ["If you are a lawful permanent resident, a conditional permanent resident"],
+      "reference_answer": "No. Lawful permanent residents, conditional permanent residents, and nonimmigrants authorized to work only for a specific employer under 8 CFR 274a.12(b) should not use Form I-765."
+    },
+    {
+      "id": "t28",
+      "form": "I-130",
+      "questions": {
+        "plain": "I married someone who has a teenage son. Can I petition for him?",
+        "jargon": "When is a stepchild ineligible to be a Form I-130 beneficiary?"
+      },
+      "answer_phrases": ["A stepparent or stepchild, if the marriage that created the relationship took place after the child turned 18 years of age"],
+      "reference_answer": "Only if your marriage took place before the child turned 18. You may not file for a stepchild if the marriage happened after the child turned 18."
+    },
+    {
+      "id": "t29",
+      "form": "I-130",
+      "questions": {
+        "plain": "I have a green card but I'm not a citizen yet. Can I bring my parents or my sister here?",
+        "jargon": "Which relatives may a lawful permanent resident petition for on Form I-130?"
+      },
+      "answer_phrases": ["If you are a lawful permanent resident of the United States, you must file a separate Form I-130 for each eligible relative"],
+      "reference_answer": "No. A lawful permanent resident may only file for a spouse, an unmarried child under 21, or an unmarried son or daughter 21 or older. Parents and siblings require a U.S. citizen petitioner."
+    },
+    {
+      "id": "t30",
+      "form": "I-765",
+      "questions": {
+        "plain": "I'm from El Salvador and part of the old church lawsuit settlement for asylum seekers. How fast will my work permit be decided?",
+        "jargon": "What are the requirements for an EAD under the ABC settlement agreement, category (c)(8)?"
+      },
+      "answer_phrases": ["you are entitled to an EAD under the ABC settlement"],
+      "reference_answer": "Salvadoran or Guatemalan ABC class members are entitled to an EAD. Form I-765 will be decided within 60 days if you identify yourself as an ABC class member in Part 3, Item Number 6, and have a complete asylum application pending."
+    },
+    {
+      "id": "t31",
+      "form": "I-485",
+      "questions": {
+        "plain": "I got asylum and now I'm applying for a green card, but I don't have my birth certificate. Is that okay?",
+        "jargon": "Are asylee adjustment applicants required to submit a birth certificate with Form I-485?"
+      },
+      "answer_phrases": ["Asylees are not required to submit a photocopy of their birth certificate"],
+      "reference_answer": "Yes. Asylees are not required to submit a copy of their birth certificate, but should submit one if it is available."
+    }
+  ],
+  "out_of_scope": [
+    {"id": "o01", "question": "How do I apply for U.S. citizenship and what is on the civics test?"},
+    {"id": "o02", "question": "When is the registration period for the H-1B lottery this year?"},
+    {"id": "o03", "question": "Can I use my work permit card to get a driver's license in California?"},
+    {"id": "o04", "question": "How much is the filing fee for Form I-765?"},
+    {"id": "o05", "question": "How long does USCIS usually take to process an I-130 petition?"}
+  ]
+}

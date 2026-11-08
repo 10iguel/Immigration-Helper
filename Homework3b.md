@@ -39,7 +39,12 @@ leak through a tool call.
 
 ## Final Project Status
 
-- 
+- Since last week, I built the evaluation set for my USCIS Form Helper: 31 questions with known answers from the
+I-130, I-131, I-485 and I-765 instructions, each asked once in plain words and once in USCIS jargon, so I can measure
+how much the vocabulary gap hurts retrieval. It also includes harder cases like deadlines, "who may not file" questions,
+and exceptions to general rules, plus 5 questions the instructions don't answer, to test whether the app admits it
+doesn't know. I chose OpenAI for both embeddings and answers, and my next step is to embed the chunks, compare vector
+search against keyword search on this set, and then generate answers with citations.
 
 ## How many hours you spent on the homework
 

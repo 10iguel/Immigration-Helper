@@ -1,24 +1,10 @@
 import json
-from datetime import date
 
 import pytest
 
 from immigration_helper.evaluation import AnswerTarget, EvalQuestion, EvalSetStore, QuestionStyle
-from immigration_helper.models import Chunk, FormId
-
-
-def make_chunk(text: str, form: str = "I-765") -> Chunk:
-    return Chunk(
-        id=f"{form}-0001",
-        form=FormId(form),
-        edition=date(2025, 8, 21),
-        document_title="Instructions",
-        heading_path=(),
-        text=text,
-        page_start=1,
-        page_end=1,
-    )
-
+from immigration_helper.models import FormId
+from tests.factories import make_chunk
 
 TARGET = AnswerTarget(
     id="t01",

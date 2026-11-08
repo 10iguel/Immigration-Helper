@@ -38,8 +38,8 @@ class Chunk:
         """Where the passage sits in the document, e.g. ``... > Part 2. Information About You``."""
         return " > ".join((self.document_title, *self.heading_path))
 
-    def embedding_text(self) -> str:
-        """Text to embed: the header gives otherwise ambiguous passages their meaning."""
+    def search_text(self) -> str:
+        """Text to index for search: the header gives otherwise ambiguous passages their meaning."""
         return f"{self.context_header}\n\n{self.text}"
 
     def word_count(self) -> int:

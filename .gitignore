@@ -1,0 +1,19 @@
+# Secrets
+.env
+*.key
+
+# Personal immigration documents (document vault) - never commit
+data/personal/
+
+# Generated vector store / indexes
+data/index/
+chroma/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# IDE
+.idea/
