@@ -2,14 +2,15 @@
 import argparse
 from pathlib import Path
 
+from immigration_helper import config
 from immigration_helper.ingestion import ChunkStore, InstructionReader, SectionChunker
 from immigration_helper.models import Chunk
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Chunk USCIS instruction PDFs.")
-    parser.add_argument("--forms-dir", type=Path, default=Path("data/forms"))
-    parser.add_argument("--output", type=Path, default=Path("data/index/chunks.jsonl"))
+    parser.add_argument("--forms-dir", type=Path, default=config.FORMS_DIR)
+    parser.add_argument("--output", type=Path, default=config.CHUNKS_PATH)
     parser.add_argument("--max-words", type=int, default=300)
     args = parser.parse_args()
 

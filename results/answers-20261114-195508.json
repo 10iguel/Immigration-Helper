@@ -1,0 +1,236 @@
+{
+  "chat_model": "gpt-4.1-mini",
+  "judge_model": "gpt-4.1",
+  "passages": 5,
+  "form_filter": false,
+  "answering_cost_usd": 0.006460819999999999,
+  "judging_cost_usd": 0.033375999999999996,
+  "summaries": [
+    {
+      "group": "answerable",
+      "questions": 5,
+      "correct": 0.4,
+      "partially_correct": 0.6,
+      "fully_supported": 0.6,
+      "declined": 0.2,
+      "gives_advice": 0.0
+    },
+    {
+      "group": "plain",
+      "questions": 4,
+      "correct": 0.25,
+      "partially_correct": 0.75,
+      "fully_supported": 0.5,
+      "declined": 0.0,
+      "gives_advice": 0.0
+    },
+    {
+      "group": "jargon",
+      "questions": 1,
+      "correct": 1.0,
+      "partially_correct": 0.0,
+      "fully_supported": 1.0,
+      "declined": 1.0,
+      "gives_advice": 0.0
+    },
+    {
+      "group": "out_of_scope",
+      "questions": 1,
+      "correct": 1.0,
+      "partially_correct": 0.0,
+      "fully_supported": 1.0,
+      "declined": 1.0,
+      "gives_advice": 0.0
+    }
+  ],
+  "questions": [
+    {
+      "id": "t01-plain",
+      "style": "plain",
+      "question": "My green card application is still being processed. Can I get permission to work while I wait?",
+      "search_query": "applicant for adjustment of status to lawful permanent resident, Form I-485, eligibility for employment authorization document (EAD), Form I-765, concurrent filing or pending adjustment application",
+      "reference_answer": "Yes. File Form I-765 under category (c)(9) together with Form I-485, or, if filing separately, include a copy of the Form I-485 receipt notice or other evidence that it is pending.",
+      "answer": "Yes, if you have filed Form I-485 to adjust your status to lawful permanent resident (green card) and it is still pending, you may file Form I-765 to apply for an Employment Authorization Document (EAD), which is permission to work. You can file Form I-765 together with your Form I-485 or after filing it by submitting a copy of your Form I-485 receipt notice. USCIS will extend your current nonimmigrant status while your Form I-485 is pending. The exact eligibility category you should use on Form I-765 depends on your specific immigration status, such as U nonimmigrant or T nonimmigrant, or if you are adjusting under section 245(c)(9).",
+      "answerable": true,
+      "passage_ids": [
+        "I-765-0084",
+        "I-485-0005",
+        "I-765-0065",
+        "I-765-0079",
+        "I-765-0002"
+      ],
+      "citations": [
+        "Form I-765 Instructions (08/21/25), p. 16: Who May File Form I-765? > Other Categories > 16. U Nonimmigrant Adjustment of Status--(c)(9).",
+        "Form I-765 Instructions (08/21/25), p. 12: Who May File Form I-765? > Adjustment of Status Categories > 1. Adjustment Applicant under Section 245--(c)(9).",
+        "Form I-765 Instructions (08/21/25), p. 15: Who May File Form I-765? > Other Categories > 13. T Nonimmigrant Adjustment of Status--(c)(9)."
+      ],
+      "rejected_citation_ids": [],
+      "verdict": {
+        "correctness": "partial",
+        "support": "partial",
+        "gives_advice": false,
+        "unsupported_claims": [
+          "USCIS will extend your current nonimmigrant status while your Form I-485 is pending (for all adjustment applicants; only supported for U and T nonimmigrants)"
+        ],
+        "reasoning": "The assistant's answer correctly states that a person with a pending Form I-485 (green card application) may file Form I-765 to apply for an EAD, and that this can be done either concurrently with the I-485 or after, by submitting a receipt notice. This is fully supported by passage I-765-0065. The answer also mentions that the eligibility category depends on the applicant's status (e.g., U or T nonimmigrant, or section 245(c)(9)), which is supported by passages I-765-0084 and I-765-0079. However, the statement 'USCIS will extend your current nonimmigrant status while your Form I-485 is pending' is only specifically supported for U and T nonimmigrants (see I-765-0084 and I-765-0079), not for all adjustment applicants. The assistant's answer could be misread as applying to all adjustment applicants, which is not fully supported. The main point matches the reference answer, but the extension of status claim is only partially supported."
+      },
+      "is_correct": false,
+      "answer_cost_usd": 0.0009596000000000001,
+      "judge_cost_usd": 0.006142
+    },
+    {
+      "id": "t08-plain",
+      "style": "plain",
+      "question": "I have a family trip to Mexico while my green card case is pending. Is that a problem?",
+      "search_query": "travel outside the United States while Form I-485, Application to Register Permanent Residence or Adjust Status, is pending; advance parole travel document; Form I-131, Application for Travel Document",
+      "reference_answer": "Yes. Traveling anywhere outside the US, even briefly to Canada or Mexico, abandons a pending section 245 application unless you first obtain an Advance Parole Document (Form I-131), you are an H-1B/H-4, L, V, or K-3/K-4 nonimmigrant maintaining status, or you are a TPS beneficiary traveling with authorization.",
+      "answer": "If you have a pending Form I-485 (Application to Register Permanent Residence or Adjust Status) and you travel outside the United States, including to Mexico, USCIS will generally consider your application abandoned unless you obtain an Advance Parole Document before leaving. You get this document by filing Form I-131. Alternatively, if you are in certain nonimmigrant categories such as H-1B/H-4, L, V, or K3/K4 and you maintain lawful status and return with a valid visa in one of those categories, your application will not be considered abandoned. Without an Advance Parole Document or a valid visa in those categories, traveling to Mexico could cause your green card application to be abandoned. Therefore, you should either get an Advance Parole Document before your trip or ensure you qualify under one of the exceptions with a valid visa to avoid problems with your green card case.",
+      "answerable": true,
+      "passage_ids": [
+        "I-485-0042",
+        "I-131-0026",
+        "I-131-0027",
+        "I-131-0031",
+        "I-131-0006"
+      ],
+      "citations": [
+        "Form I-485 Instructions (09/18/26), p. 14: General Instructions > If You Leave the United States While Your Application Is Pending",
+        "Form I-131 Instructions (01/20/25), p. 2: What Types of Documents Can I Apply For on Form I-131? > Consequences of Failure to Obtain Advance Parole Document for Certain Aliens Who Are Currently Inside the United States"
+      ],
+      "rejected_citation_ids": [],
+      "verdict": {
+        "correctness": "partial",
+        "support": "full",
+        "gives_advice": false,
+        "unsupported_claims": [],
+        "reasoning": "The assistant's answer accurately states that traveling outside the US (including to Mexico) with a pending I-485 will generally result in the application being considered abandoned unless the applicant obtains an Advance Parole Document before leaving, or is in one of the specified nonimmigrant categories and maintains status with a valid visa. These points are directly supported by the passages, particularly I-485-0042 and I-131-0006. The assistant also correctly mentions the process for obtaining Advance Parole (filing Form I-131) and the exceptions for certain visa holders. The only minor omission is the TPS beneficiary exception, which is mentioned in the reference answer and in passage I-485-0042, but the assistant does not mention TPS. However, all claims made are supported by the passages provided. The answer does not give personal advice but summarizes what the instructions say."
+      },
+      "is_correct": false,
+      "answer_cost_usd": 0.001226,
+      "judge_cost_usd": 0.006744
+    },
+    {
+      "id": "t12-plain",
+      "style": "plain",
+      "question": "Can my spouse and kids get green cards through my application?",
+      "search_query": "U.S. citizen or lawful permanent resident petitioner, immigrant visa petition for spouse and children, Forms I-130, eligibility for adjustment of status to lawful permanent resident for spouse and children, Forms I-485",
+      "reference_answer": "Yes, as derivative applicants, if an immigrant visa is immediately available. Each must file their own Form I-485: at the same time as you, while yours is pending, or after it is approved if you are still a permanent resident.",
+      "answer": "Your spouse and unmarried children under 21 years old may be able to get green cards (lawful permanent residence) through your application if you file Form I-130 (Petition for Alien Relative) for each of them. If you are a U.S. citizen, you can file Form I-130 for your spouse and your unmarried children under 21 years old. If you are a lawful permanent resident, you can also file Form I-130 for your spouse and unmarried children under 21 years old. Each relative needs a separate Form I-130. After the Form I-130 is approved and an immigrant visa is available, your spouse and children can file Form I-485 (Application to Register Permanent Residence or Adjust Status) to get their green cards. Whether they can file Form I-485 together with your Form I-130 or must wait depends on the visa availability and their category. For more details, you should check the specific instructions for family-based applicants.",
+      "answerable": true,
+      "passage_ids": [
+        "I-485-0052",
+        "I-485-0051",
+        "I-485-0001",
+        "I-130-0001",
+        "I-130-0003"
+      ],
+      "citations": [
+        "Form I-485 Instructions (09/18/26), p. 17: Additional Instructions for Family-Based Applicants > Other Relative of a U.S. Citizen or Relative of a Lawful Permanent Resident Under the Family-Based Preference Categories (Form I-130)",
+        "Form I-485 Instructions (09/18/26), p. 17: Additional Instructions for Family-Based Applicants",
+        "Form I-130 Instructions (04/01/24), p. 1: Who May File Form I-130"
+      ],
+      "rejected_citation_ids": [],
+      "verdict": {
+        "correctness": "partial",
+        "support": "partial",
+        "gives_advice": false,
+        "unsupported_claims": [
+          "That spouses and children of immediate relatives of U.S. citizens can get green cards as derivatives through the principal's application (derivatives are not allowed in this category, per I-485-0051)."
+        ],
+        "reasoning": "The assistant's answer is mostly supported by the passages. It correctly states that a U.S. citizen or lawful permanent resident can file Form I-130 for a spouse and unmarried children under 21 (supported by I-130-0001). It also correctly notes that each relative needs a separate Form I-130 (I-130-0001). The answer explains that after I-130 approval and visa availability, the spouse and children can file I-485 (supported by I-485-0052 and I-485-0001). However, the answer does not clearly distinguish between immediate relatives (where derivative applicants are not allowed, per I-485-0051) and family-based preference categories (where derivatives are allowed, per I-485-0052). The assistant implies that spouses and children can always get green cards through the principal's application, which is not accurate for immediate relatives of U.S. citizens, as derivatives are not allowed in that category (I-485-0051). The answer also does not mention that each must file their own I-485 as a derivative, which is a key point in the reference answer. The claim that \"your spouse and unmarried children under 21 years old may be able to get green cards through your application if you file Form I-130 for each of them\" is not fully supported for immediate relatives of U.S. citizens, as derivatives are not allowed in that category. The assistant does not give direct advice but does suggest what the user \"should check\" for more details, which is borderline but not explicit advice."
+      },
+      "is_correct": false,
+      "answer_cost_usd": 0.0012108000000000002,
+      "judge_cost_usd": 0.00795
+    },
+    {
+      "id": "t24-jargon",
+      "style": "jargon",
+      "question": "What are the certified English translation requirements for foreign-language documents submitted with Form I-485?",
+      "search_query": "certified English translation requirements for foreign-language documents submitted with Form I-485, Application to Register Permanent Residence or Adjust Status",
+      "reference_answer": "Yes. Submit a full English translation with the copy of the document. The translator must certify that the translation is complete and accurate and that they are competent to translate, and include their signature, printed name, the date, and contact information.",
+      "answer": "The loaded instructions do not cover the certified English translation requirements for foreign-language documents submitted with Form I-485. Please check uscis.gov or consult an immigration attorney for this information.",
+      "answerable": false,
+      "passage_ids": [
+        "I-485-0017",
+        "I-485-0016",
+        "I-485-0020",
+        "I-485-0134",
+        "I-485-0024"
+      ],
+      "citations": [],
+      "rejected_citation_ids": [],
+      "verdict": {
+        "correctness": "correct",
+        "support": "full",
+        "gives_advice": false,
+        "unsupported_claims": [],
+        "reasoning": "The assistant states that the loaded instructions do not cover the certified English translation requirements for foreign-language documents submitted with Form I-485. After reviewing the provided passages, none of them mention requirements for certified English translations of foreign-language documents. Therefore, the assistant's claim is fully supported by the passages. The reference answer provides the actual requirements, but since the passages do not contain this information, the assistant's answer does not contradict the reference and is correct in context. The assistant does not give advice beyond referring the user to other sources."
+      },
+      "is_correct": true,
+      "answer_cost_usd": 0.0005012,
+      "judge_cost_usd": 0.003482
+    },
+    {
+      "id": "t29-plain",
+      "style": "plain",
+      "question": "I have a green card but I'm not a citizen yet. Can I bring my parents or my sister here?",
+      "search_query": "lawful permanent resident, petition for parents and siblings, Form I-130 Petition for Alien Relative, eligibility for family-sponsored preference categories",
+      "reference_answer": "No. A lawful permanent resident may only file for a spouse, an unmarried child under 21, or an unmarried son or daughter 21 or older. Parents and siblings require a U.S. citizen petitioner.",
+      "answer": "If you have a green card (lawful permanent resident status), you can file Form I-130 to bring your spouse, your unmarried children under 21 years old, and your unmarried sons or daughters 21 years or older. However, you cannot file to bring your parents or your siblings. Only U.S. citizens who are at least 21 years old can file petitions for their parents and siblings. Therefore, as a green card holder, you cannot bring your parents or your sister through Form I-130. For more details, see the sections about who may file Form I-130 and family-based preference categories.",
+      "answerable": true,
+      "passage_ids": [
+        "I-485-0052",
+        "I-485-0051",
+        "I-130-0001",
+        "I-130-0025",
+        "I-130-0002"
+      ],
+      "citations": [
+        "Form I-130 Instructions (04/01/24), p. 1: Who May File Form I-130",
+        "Form I-485 Instructions (09/18/26), p. 17: Additional Instructions for Family-Based Applicants > Other Relative of a U.S. Citizen or Relative of a Lawful Permanent Resident Under the Family-Based Preference Categories (Form I-130)"
+      ],
+      "rejected_citation_ids": [],
+      "verdict": {
+        "correctness": "correct",
+        "support": "full",
+        "gives_advice": false,
+        "unsupported_claims": [],
+        "reasoning": "The assistant's answer states that a green card holder (lawful permanent resident) can file for a spouse and unmarried children, but not for parents or siblings. This is directly supported by passage I-130-0001, which lists the eligible relatives for both U.S. citizens and lawful permanent residents. The passage clearly states that only U.S. citizens (age 21+) can file for parents and siblings, and lawful permanent residents can only file for spouse and unmarried children. The assistant's answer does not make any unsupported factual claims and matches the reference answer on the main point. The answer does not give personal advice, only describes what the instructions say."
+      },
+      "is_correct": true,
+      "answer_cost_usd": 0.0009992,
+      "judge_cost_usd": 0.005528
+    },
+    {
+      "id": "o04",
+      "style": "out_of_scope",
+      "question": "How much is the filing fee for Form I-765?",
+      "search_query": "filing fee for Form I-765, Application for Employment Authorization",
+      "reference_answer": null,
+      "answer": "The loaded instructions do not specify the exact filing fee amount for Form I-765. They mention that fee information can be found on Form G-1055 at www.uscis.gov/forms.",
+      "answerable": false,
+      "passage_ids": [
+        "I-765-0000",
+        "I-765-0135",
+        "I-765-0136",
+        "I-765-0088",
+        "I-765-0131"
+      ],
+      "citations": [
+        "Form I-765 Instructions (08/21/25), p. 16: General Instructions"
+      ],
+      "rejected_citation_ids": [],
+      "verdict": {
+        "correctness": "correct",
+        "support": "full",
+        "gives_advice": false,
+        "unsupported_claims": [],
+        "reasoning": "The assistant correctly states that the loaded instructions do not specify the exact filing fee amount for Form I-765 and that fee information can be found on Form G-1055 at www.uscis.gov/forms. This is directly supported by passage I-765-0088, which instructs users to see Form G-1055 for specific fee information. There are no unsupported claims in the answer. The answer does not give advice, only describes what the instructions say."
+      },
+      "is_correct": true,
+      "answer_cost_usd": 0.0005572,
+      "judge_cost_usd": 0.00353
+    }
+  ]
+}

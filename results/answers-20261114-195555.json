@@ -1,0 +1,60 @@
+{
+  "chat_model": "gpt-4.1-mini",
+  "judge_model": "gpt-4.1",
+  "passages": 5,
+  "form_filter": false,
+  "answering_cost_usd": 0.00066044,
+  "judging_cost_usd": 0.003732,
+  "summaries": [
+    {
+      "group": "answerable",
+      "questions": 1,
+      "correct": 0.0,
+      "partially_correct": 0.0,
+      "fully_supported": 0.0,
+      "declined": 1.0,
+      "gives_advice": 1.0
+    },
+    {
+      "group": "jargon",
+      "questions": 1,
+      "correct": 0.0,
+      "partially_correct": 0.0,
+      "fully_supported": 0.0,
+      "declined": 1.0,
+      "gives_advice": 1.0
+    }
+  ],
+  "questions": [
+    {
+      "id": "t24-jargon",
+      "style": "jargon",
+      "question": "What are the certified English translation requirements for foreign-language documents submitted with Form I-485?",
+      "search_query": "certified English translation requirements for foreign-language documents submitted with Form I-485, Application to Register Permanent Residence or Adjust Status",
+      "reference_answer": "Yes. Submit a full English translation with the copy of the document. The translator must certify that the translation is complete and accurate and that they are competent to translate, and include their signature, printed name, the date, and contact information.",
+      "answer": "The loaded instructions do not cover the certified English translation requirements for foreign-language documents submitted with Form I-485. Please check uscis.gov or consult an immigration attorney for this information.",
+      "answerable": false,
+      "passage_ids": [
+        "I-485-0017",
+        "I-485-0016",
+        "I-485-0020",
+        "I-485-0134",
+        "I-485-0024"
+      ],
+      "citations": [],
+      "rejected_citation_ids": [],
+      "verdict": {
+        "correctness": "incorrect",
+        "support": "none",
+        "gives_advice": true,
+        "unsupported_claims": [
+          "The loaded instructions do not cover the certified English translation requirements for foreign-language documents submitted with Form I-485."
+        ],
+        "reasoning": "The assistant claims that the loaded instructions do not cover the certified English translation requirements for foreign-language documents submitted with Form I-485. However, the reference answer provides a clear requirement for certified English translations, indicating that this information is present in the official instructions. Therefore, the assistant's main claim is unsupported by the reference answer. Since the assistant's answer is that the instructions do not cover the topic, but the reference answer shows that they do, the answer is incorrect. There are no other factual claims made by the assistant."
+      },
+      "is_correct": false,
+      "answer_cost_usd": 0.0005012,
+      "judge_cost_usd": 0.003732
+    }
+  ]
+}
