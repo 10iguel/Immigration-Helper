@@ -3,6 +3,8 @@
     python -m immigration_helper.evaluation validate    # every answer target matches a chunk
     python -m immigration_helper.evaluation retrieval   # score retrievers, save results/retrieval-*.json
     python -m immigration_helper.evaluation answers     # answer and judge every question, save results/answers-*.json
+    python -m immigration_helper.evaluation grading-sheet results/answers-X.json   # answers for you to grade by hand
+    python -m immigration_helper.evaluation agreement results/answers-X.json       # your grades vs. the judge's
 """
 import argparse
 import json
@@ -11,7 +13,7 @@ from pathlib import Path
 
 from immigration_helper import config
 from immigration_helper.chat_model import OpenAIChatModel
-from immigration_helper.evaluation import answers_command
+from immigration_helper.evaluation import answers_command, grading_command
 from immigration_helper.evaluation.eval_set import EvalSetStore, QuestionStyle
 from immigration_helper.evaluation.retrieval_eval import QuestionResult, RetrievalEvaluator, summarize
 from immigration_helper.ingestion import ChunkStore
@@ -66,8 +68,18 @@ def main() -> None:
     answers_command.add_arguments(
         commands.add_parser("answers", help="answer every question and grade the answers with an LLM judge")
     )
+    grading_command.add_sheet_arguments(
+        commands.add_parser("grading-sheet", help="write a sample of saved answers to a CSV sheet to grade by hand")
+    )
+    grading_command.add_agreement_arguments(
+        commands.add_parser("agreement", help="compare your grades in the sheet with the judge's")
+    )
 
     args = parser.parse_args()
+    if args.command == "grading-sheet":  # these two only read saved files
+        return grading_command.run_sheet(args)
+    if args.command == "agreement":
+        return grading_command.run_agreement(args)
     questions = EvalSetStore(args.eval_set).load()
     chunks = ChunkStore(args.chunks).load()
     if args.command == "validate":
