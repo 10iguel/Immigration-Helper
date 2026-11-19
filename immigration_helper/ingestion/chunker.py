@@ -7,6 +7,9 @@ from immigration_helper.models import Chunk
 
 _MIN_LABEL_WORDS = 3  # "1." alone is a plain numbered sentence, not a labeled entry
 _SENTENCE_END = re.compile(r"(?<=[.;:])\s+")
+# A "NOTE:" line on its own introduces a numbered list of notes, which answer questions of their own.
+_NOTES_HEADER = re.compile(r"^NOTES?:$", re.IGNORECASE)
+_NOTES_LABEL = "Notes"
 
 
 @dataclass
@@ -22,7 +25,9 @@ class SectionChunker:
     """Chunks by section > subsection > list entries, so each chunk answers one kind of question.
 
     A new chunk starts at every heading and every labeled list entry: an "Item Number" paragraph or
-    a numbered entry such as an eligibility category, with lettered sub-entries nested under it.
+    a numbered entry such as an eligibility category, with lettered sub-entries nested under it. A
+    "NOTE:" line that introduces a list of notes counts as an entry too, so the notes aren't buried
+    at the end of the passage before them.
     Within a heading, paragraphs are packed together until ``max_words``; a single paragraph longer
     than that is split at sentence boundaries.
     """
@@ -43,7 +48,7 @@ class SectionChunker:
             elif block.kind is BlockKind.SUBSECTION:
                 headings, entries = headings[:1] + [block.text], []
             elif level is not None:
-                entries = (entries + [None] * level)[:level] + [block.lead]
+                entries = (entries + [None] * level)[:level] + [self._entry_label(block)]
             elif not current.blocks or current.word_count() + len(block.text.split()) <= self._max_words:
                 current.blocks.append(block)
                 continue
@@ -60,9 +65,17 @@ class SectionChunker:
 
     @staticmethod
     def _entry_level(block: TextBlock) -> int | None:
-        if block.kind is not BlockKind.BODY or len(block.lead.split()) < _MIN_LABEL_WORDS:
+        if block.kind is not BlockKind.BODY:
+            return None
+        if _is_notes_header(block):
+            return 0
+        if len(block.lead.split()) < _MIN_LABEL_WORDS:
             return None
         return list_entry_level(block.lead)
+
+    @staticmethod
+    def _entry_label(block: TextBlock) -> str:
+        return _NOTES_LABEL if _is_notes_header(block) else block.lead
 
     def _to_chunks(self, document: InstructionDocument, drafts: list[_Draft]) -> list[Chunk]:
         chunks = []
@@ -99,3 +112,7 @@ class SectionChunker:
         if current:
             pieces.append(" ".join(current))
         return pieces
+
+
+def _is_notes_header(block: TextBlock) -> bool:
+    return bool(_NOTES_HEADER.match(block.text.strip()))

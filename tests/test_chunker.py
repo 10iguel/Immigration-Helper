@@ -130,3 +130,25 @@ def test_label_only_entry_is_skipped():
 
     assert len(chunks) == 1
     assert chunks[0].heading_path[-2:] == ("C. Basis for Work Authorization.", "(1) Evidence of status.")
+
+
+def test_a_notes_header_starts_its_own_chunk_holding_the_notes():
+    document = make_document(
+        section("Who May File Form I-130"),
+        body("2. If you are a lawful permanent resident, you may file for: A. Your spouse.", lead="2."),
+        body("NOTE:", lead="NOTE:"),
+        body("1. If you are filing for your spouse, he or she must complete and sign Form I-130A.", lead="1."),
+        body("2. There is no visa category for married children of lawful permanent residents.", lead="2."),
+        section("Who May Not File Form I-130?"),
+        body("NOTE: Do not file for a grandparent.", lead="NOTE:"),
+    )
+
+    chunks = SectionChunker().chunk(document)
+
+    assert [chunk.heading_path for chunk in chunks] == [
+        ("Who May File Form I-130",),
+        ("Who May File Form I-130", "Notes"),
+        ("Who May Not File Form I-130?",),  # a note inside a paragraph stays with its section
+    ]
+    assert chunks[1].text.startswith("NOTE: 1. If you are filing for your spouse")
+    assert "married children" in chunks[1].text

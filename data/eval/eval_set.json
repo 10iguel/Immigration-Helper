@@ -315,6 +315,78 @@
       },
       "answer_phrases": ["Asylees are not required to submit a photocopy of their birth certificate"],
       "reference_answer": "Yes. Asylees are not required to submit a copy of their birth certificate, but should submit one if it is available."
+    },
+    {
+      "id": "t32",
+      "form": "I-131",
+      "questions": {
+        "plain": "i got asylum last year and want to visit my aunt in canada for a couple weeks. what document do i need to get back in and when do i have to apply for it?",
+        "jargon": "Must an asylee apply for a Refugee Travel Document on Form I-131 before departing the United States?"
+      },
+      "answer_phrases": [
+        "The alien must apply BEFORE they leave the United States"
+      ],
+      "reference_answer": "An asylee needs a Refugee Travel Document (Form I-131) to return after temporary travel abroad, unless they have other documents such as a green card and passport. They must apply before leaving the United States and attend any required biometrics appointment before leaving."
+    },
+    {
+      "id": "t33",
+      "form": "I-765",
+      "questions": {
+        "plain": "¿Qué tipo de fotos tengo que mandar con mi solicitud de permiso de trabajo?",
+        "jargon": "What are the passport-style photograph requirements for Form I-765?"
+      },
+      "answer_phrases": [
+        "You must submit two identical color passport-style photographs of yourself taken recently"
+      ],
+      "reference_answer": "Two identical, recent color passport-style photos: 2 by 2 inches, full face and frontal view, white to off-white background, unmounted and unretouched, with your name and A-Number (if any) lightly printed on the back in pencil or felt pen."
+    },
+    {
+      "id": "t34",
+      "form": "I-765",
+      "questions": {
+        "plain": "my country was designated for TPS and im applying for it. can i get a work permit too, and do i send it together?",
+        "jargon": "What must an applicant under TPS category (a)(12) or (c)(19) file with Form I-765?"
+      },
+      "answer_phrases": [
+        "File Form I-765 with your Form I-821"
+      ],
+      "reference_answer": "Yes. File Form I-765 together with Form I-821, Application for Temporary Protected Status, or with evidence that USCIS received or approved your Form I-821, and include evidence of nationality and identity. Also follow the most recent TPS Federal Register notice for your country."
+    },
+    {
+      "id": "t35",
+      "form": "I-130",
+      "questions": {
+        "plain": "We adopted our daughter in Guatemala when she was 10 and she has lived with us ever since. I'm a citizen now, what do I send to prove she's my kid?",
+        "jargon": "What evidence of an adoptive relationship must accompany Form I-130?"
+      },
+      "answer_phrases": [
+        "you must submit a copy of the adoption decree showing that the adoption took place before the child turned 16 years of age"
+      ],
+      "reference_answer": "A copy of the adoption decree showing the adoption took place before the child turned 16, plus evidence that the child was in your legal custody and lived with you for at least two years before or after the adoption."
+    },
+    {
+      "id": "t36",
+      "form": "I-130",
+      "questions": {
+        "plain": "im filing for my husband, he is still in honduras. is there another form he has to fill out and does he have to sign it??",
+        "jargon": "Must a spouse beneficiary who is overseas sign Form I-130A, Supplemental Information for Spouse Beneficiary?"
+      },
+      "answer_phrases": [
+        "he or she must complete and sign Form I-130A"
+      ],
+      "reference_answer": "Yes. A spouse beneficiary must complete Form I-130A, which is submitted together with Form I-130. A spouse who is overseas must still complete it but does not have to sign it."
+    },
+    {
+      "id": "t37",
+      "form": "I-485",
+      "questions": {
+        "plain": "do they take fingerprints for the green card? how will i know when to go?",
+        "jargon": "What does the biometric services appointment for Form I-485 involve and how is it scheduled?"
+      },
+      "answer_phrases": [
+        "USCIS may require you to appear for an interview or provide biometrics"
+      ],
+      "reference_answer": "USCIS may require biometrics (fingerprints, photograph and/or signature) to verify identity and run background checks. If an appointment is needed, USCIS sends a notice with the date, time and location. At the appointment you sign an oath confirming the information in your application."
     }
   ],
   "out_of_scope": [
@@ -322,6 +394,9 @@
     {"id": "o02", "question": "When is the registration period for the H-1B lottery this year?"},
     {"id": "o03", "question": "Can I use my work permit card to get a driver's license in California?"},
     {"id": "o04", "question": "How much is the filing fee for Form I-765?"},
-    {"id": "o05", "question": "How long does USCIS usually take to process an I-130 petition?"}
+    {"id": "o05", "question": "How long does USCIS usually take to process an I-130 petition?"},
+    {"id": "o06", "question": "My green card expires next month. How do I renew it?"},
+    {"id": "o07", "question": "Can I collect unemployment benefits while my work permit renewal is pending?"},
+    {"id": "o08", "question": "How much money does my sponsor have to make for the affidavit of support if we are a family of four?"}
   ]
 }
