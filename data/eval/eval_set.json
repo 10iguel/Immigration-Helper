@@ -398,5 +398,15 @@
     {"id": "o06", "question": "My green card expires next month. How do I renew it?"},
     {"id": "o07", "question": "Can I collect unemployment benefits while my work permit renewal is pending?"},
     {"id": "o08", "question": "How much money does my sponsor have to make for the affidavit of support if we are a family of four?"}
+  ],
+  "conversation": [
+    {"id": "c01", "message": "awesome, thanks!"},
+    {"id": "c02", "message": "hi! who are you?"},
+    {"id": "c03", "message": "What can you help me with?"}
+  ],
+  "follow_ups": [
+    {"id": "f01", "form": "I-485", "previous_question": "My green card application is still being processed. Can I get permission to work while I wait?", "question": "Can I also travel outside the country while I wait?", "answer_phrases": ["USCIS will consider your application as abandoned unless"], "reference_answer": "Traveling outside the US while the green card application (Form I-485) is pending abandons it unless you first get an Advance Parole Document (Form I-131), or you are an H-1B/H-4, L, V or K-3/K-4 nonimmigrant maintaining status, or a TPS beneficiary traveling with authorization."},
+    {"id": "f02", "form": "I-130", "previous_question": "I'm a US citizen. Can I sponsor my brother to move here?", "question": "What about my mom?", "answer_phrases": ["Your mother or father (you must be 21 years of age or older)"], "reference_answer": "Yes. A U.S. citizen who is at least 21 years old may file Form I-130 for their mother or father."},
+    {"id": "f03", "form": "I-765", "previous_question": "What kind of photos do I need to send with my work permit application?", "question": "Do I need to write anything on the back of them?", "answer_phrases": ["You must submit two identical color passport-style photographs of yourself taken recently"], "reference_answer": "Yes. Lightly print your name and A-Number (if you have one) on the back of the photos with a pencil or felt pen."}
   ]
 }

@@ -19,7 +19,8 @@ says "the instructions don't cover this" instead of guessing.
 | Answer questions from the official instructions, with citations (RAG with embeddings)                                  | Done: about 95% correct on 82 test questions |
 | Measure everything: retrieval metrics, an LLM judge, and a hand check of the judge                                     | Done                                         |
 | Web chat page                                                                                                          | Done: Next.js + FastAPI                      |
-| Chat history, so users can come back and ask follow-up questions                                                       | Planned (PostgreSQL)                         |
+| Chat history: log in and come back to saved chats                                                                      | Done: PostgreSQL                             |
+| Follow-up questions and small talk: a search agent with tool calling                                                   | Done: see "Search agent"                     |
 | Form review: users upload a filled-out form and get a list of errors or missing information before sending it to USCIS | Planned                                      |
 
 ### Initial ERD
@@ -33,9 +34,10 @@ and their embeddings stay in Chroma and `data/index/chunks.jsonl`.
 <!-- Add your system design image: save it as docs/images/system-design.png (or change the path below) -->
 ![System design](docs/images/system-design.png)
 
-Browser (Next.js chat page) → Next.js server → FastAPI (Python) → Assistant pipeline (rewrite the question, search
-Chroma, answer with GPT-4.1-mini from the top 8 passages, check the citations) → reply with sources. PostgreSQL will
-store users, chats and uploaded forms.
+Browser (Next.js chat page) → Next.js server → FastAPI (Python) → search agent (GPT-4.1-mini decides whether to
+call its search tool, which searches Chroma for the top 8 passages; it answers from them, and code checks the
+citations) → reply with sources. PostgreSQL stores
+users, login sessions and chats (and later the uploaded forms).
 
 ## Project log
 
@@ -48,6 +50,8 @@ store users, chats and uploaded forms.
 | 11/15/2026 | Checked the judge by hand (87% agreement); fixed a test-set mistake; added held-out questions (92% correct); fixed a chunking bug                        | 4     |
 | 11/18/2026 | Built the web chat: FastAPI endpoint and Next.js page                                                                                                    | 4     |
 | 11/19/2026 | Prepared the pitch; drew the system design and ERD; designed the PostgreSQL schema for chat history and form review                                      | 4     |
+| 11/19/2026 | Built chat history: PostgreSQL in Docker, sign-up and log-in, saved chats with their sources, chat list in the web page                                   |       |
+| 11/19/2026 | Replaced the fixed pipeline with a search agent (tool calling): follow-up questions and small talk; measured on 88 messages                               |       |
 | **Total**  |                                                                                                                                                          | 4     |
 
 ## Problem
@@ -62,7 +66,7 @@ form-specific questions, which leads to costly mistakes.
 1. **Form Q&A (core concept: Embeddings / RAG)** — answers questions about a form using only the
    official USCIS instructions, and cites the form, Part and edition date the answer came from.
    If the retrieved text doesn't support an answer, it says so instead of guessing.
-2. **Chat history** (planned): conversations are saved per user, so they can come back and ask follow-up questions.
+2. **Chat history**: users log in, and their conversations are saved so they can come back to them.
 3. **Form review** (planned): users upload a filled-out form and get a list of errors or missing information,
    each explained with the instruction it comes from, before they send it to USCIS.
 
@@ -120,6 +124,7 @@ change, so after the first run only the questions are embedded.
 - Keyword search: `rank_bm25`
 - The API key is read from the `OPENAI_API_KEY` environment variable
 - Web chat: FastAPI (Python API) + Next.js (page), see "Web chat"
+- PostgreSQL (in Docker) for users, login sessions and chat history, via `psycopg`
 
 ## Getting started
 
@@ -127,13 +132,17 @@ change, so after the first run only the questions are embedded.
 python -m venv .venv
 .venv/Scripts/pip install -r requirements.txt   # macOS/Linux: .venv/bin/pip
 .venv/Scripts/python -m immigration_helper.ingestion   # chunks data/forms/*instr.pdf -> data/index/chunks.jsonl
-.venv/Scripts/python -m pytest
+.venv/Scripts/python -m pytest   # the PostgreSQL tests are skipped unless the database is running
 ```
 
 ## Web chat
 
-Two servers, started from the project root in two terminals. The OpenAI key stays in the Python process: the
-page only talks to Next.js, which forwards `/api/*` to the Python API (a rewrite in `web/next.config.ts`).
+PostgreSQL plus two servers, started from the project root. The OpenAI key stays in the Python process: the page
+only talks to Next.js, which forwards `/api/*` to the Python API (a rewrite in `web/next.config.ts`).
+
+```bash
+docker compose up -d   # PostgreSQL on 127.0.0.1:5432; creates the tables from db/schema.sql the first time
+```
 
 ```bash
 .venv/Scripts/python -m immigration_helper.api   # Python API on http://127.0.0.1:8000
@@ -144,15 +153,36 @@ npm --prefix web install   # first time only (needs Node.js 20.9 or newer)
 npm --prefix web run dev   # the chat page on http://localhost:3000
 ```
 
-- **`immigration_helper/api/`** has one endpoint, `POST /api/ask` with `{"question": "..."}`. It returns the answer,
-  whether the question is answerable, the source labels, warnings and the cost of that answer. Questions must be 1
-  to 1000 characters (422 otherwise). If OpenAI fails, the error is logged and the page gets a 502 with a generic
-  message.
+- **`immigration_helper/api/`** is the HTTP layer:
+
+  | Endpoint | What it does |
+  |---|---|
+  | `POST /api/auth/signup`, `POST /api/auth/login` | Create an account or log in; sets an HttpOnly login cookie |
+  | `POST /api/auth/logout`, `GET /api/auth/me` | End the session; who is logged in |
+  | `GET /api/conversations`, `GET /api/conversations/{id}` | My chats, newest first; one chat with its messages and sources |
+  | `POST /api/ask` `{"question", "conversation_id"?}` | Answer and save into a chat (a new one when no ID is given) |
+
+  Everything except sign-up and log-in needs the login cookie (401 otherwise). Someone else's chat answers 404, the
+  same as a chat that doesn't exist. Questions must be 1 to 1000 characters (422 otherwise). If OpenAI fails, the
+  error is logged and the page gets a 502 with a generic message.
+- **`immigration_helper/accounts/`** handles sign-up, log-in and log-out. Passwords are hashed with scrypt (standard
+  library, salted). A session is a random token in the cookie, and only its SHA-256 hash is stored in
+  `user_session`. A wrong password and an unknown email give the same error and take the same time, so the login
+  form can't be used to find out who has an account.
+- **`immigration_helper/history/`** is `ChatService`: it checks that a chat belongs to the user *before* paying for an
+  answer, then saves the question, the answer and its citations in one transaction. Citations keep a copy of the
+  label the user saw, because chunk IDs change when the PDFs are re-chunked.
+- **`immigration_helper/storage/`** holds all the SQL (`psycopg`): one connection and one transaction per
+  operation. On startup the API fills the `uscis_form` table from the chunks, so every citation's form exists.
 - **`immigration_helper/answering/assistant.py`** is the `Assistant` that both the terminal chat and the API use:
   it builds the pipeline once, answers one question at a time, and tracks what each answer cost.
-- **`web/`** is the Next.js app: `app/chat.tsx` is the chat (example questions, Enter to send, sources, warnings
-  and cost under each answer, a dashed outline when the question isn't covered), and `lib/ask.ts` calls the API.
-- Like the terminal chat, each question is answered on its own: there is no conversation memory yet.
+- **`web/`** is the Next.js app: `app/clearpath-app.tsx` switches between the login form (`auth-form.tsx`) and the
+  workspace, which has the chat list (`sidebar.tsx`) and the chat (`chat.tsx`: example questions, Enter to send,
+  sources and cost under each answer). `lib/api.ts` calls the API.
+- Follow-up questions work: the chat's last 6 messages go to the search agent with each new message (see
+  "Search agent").
+- Tests: the account and chat logic and the API are tested with in-memory stores (`tests/fakes.py`), and the real
+  SQL is tested against the Docker database in a throwaway schema per test (`tests/test_postgres_stores.py`).
 - The API listens on 127.0.0.1 only, so other devices can't reach it, and every question is paid with your key.
   It needs a usage limit before it is ever put online.
 
@@ -316,12 +346,13 @@ rewriter) or on the rewritten query (filter inside it). Three runs each, identic
 .venv/Scripts/python -m immigration_helper.answering "My birth certificate is in Spanish. Do I need to get it translated?"
 ```
 
-The chat builds the search index once and shows each answer's sources and a running cost total. Each question is
-answered on its own (no memory of earlier questions), and failed API calls are reported without ending the chat.
+The chat builds the search index once and shows each answer's sources and a running cost total. It remembers the
+conversation, so follow-up questions work (add `--show-searches` to see the agent's search queries), and failed API
+calls are reported without ending the chat.
 
-`Answerer` retrieves the top 8 chunks (embedding search with the original question plus its rewrite, limited to the
-forms the question names; add `--show-rewrite` to see the search query, `--passages` or `--no-form-filter` to
-change the setup) and sends them, numbered by chunk ID, to
+*How answering worked before the search agent (kept for the evaluation history; the "Search agent" section
+describes what replaced it):* `Answerer` retrieved the top 8 chunks (embedding search with the original question plus its rewrite, limited to the
+forms the question names) and sent them, numbered by chunk ID, to
 `gpt-4.1-mini` with instructions to answer only from those passages, cite the IDs it used, say when the
 passages don't cover the question, and treat passage text as reference material rather than instructions.
 The reply is **structured output**: a strict JSON schema with `answerable`, `answer` and `cited_chunk_ids`.
@@ -491,6 +522,59 @@ before and only listed fewer example documents, which is run-to-run noise rather
 Because the fix came after seeing these questions, **t32–t37 are no longer a held-out set**, and the 0.92 above
 is the honest held-out score.
 
+## Search agent (tool calling)
+
+The first chat pipeline always searched: it rewrote every message, searched, and answered from the passages, so
+"awesome, thanks!" cost $0.0014 and came back as "the instructions don't cover this", and a follow-up like "What
+about my mom?" was searched on its own, without the earlier question. Now `gpt-4.1-mini` is an **agent with one
+tool**, `search_instructions(query)` ([`answering/agent.py`](immigration_helper/answering/agent.py)):
+
+1. The model gets its instructions ([`answering/prompt.py`](immigration_helper/answering/prompt.py)), the chat's last
+   6 messages and the new message, and decides whether to search. Its search query is written in the official
+   vocabulary and includes what the earlier messages make clear, so it replaces the separate rewrite step.
+2. The tool searches with the person's message plus the agent's query (the "original + rewrite" setup that measured
+   best), and the form filter looks only at the person's own words, never the agent's (see "Form filter").
+3. It may search twice per message; then it must reply. The reply is structured output with a `reply_type`:
+   `answer` (with cited passage IDs), `not_covered` (searched, not in the instructions) or `conversation` (small
+   talk, no facts).
+4. **Grounding is enforced in code, not only in the prompt:** only passages from this message's searches count as
+   sources, labels come from the chunk metadata, and an `answer` with no valid source is replaced by a fixed "I
+   couldn't find this in the official instructions… I won't guess" reply before anyone sees it.
+
+The evaluation runs the same `Assistant` the chat uses, and gained 3 small-talk messages (c01–c03) and 3 follow-ups
+(f01–f03, asked after their previous question in the same chat). New grading rules in code: an out-of-scope
+question is correct only if the agent **searched** and then declined, and small talk only if it replied without
+searching. Two full runs of all 88 messages on 2026-11-19
+([`214325`](results/answers-20261119-214325.json) before the fix below, [`215201`](results/answers-20261119-215201.json) after):
+
+| | Old pipeline (8 passages + filter) | Agent, first run | Agent, after the fix |
+|---|---|---|---|
+| Answerable questions correct | 0.95 (tuning set), 0.92 (held out) | 0.95 | **0.96** (plain 0.95, jargon 1.00) |
+| Answers fully supported by passages | 0.95 | 0.87 | 0.92 |
+| Searched before answering an answerable question | always (fixed pipeline) | 1.00 | 1.00 |
+| Small talk answered without searching | — | 3 / 3 | 3 / 3 |
+| Follow-ups correct | — | 2 / 3 (1 partial) | 2 / 3 (1 partial) |
+| Out of scope: searched, then declined | 7 / 8 | 1 / 8 | 3 / 8 |
+| Answers invented from memory | 0 | 1 | 0 |
+| Cost per message (answering) | $0.0013 | $0.0018 | $0.0019 |
+
+- **The first run found a real hallucination.** For "My green card expires next month. How do I renew it?" the agent
+  answered from memory ("file Form I-90 as soon as possible"), with no citation. The Form I-90 came from the
+  query-writing examples in its own prompt. Fix: the code guard above, plus a note that the examples are wording
+  only. After the fix, this question searched and declined, and no answer had to be withheld.
+- **Most out-of-scope misses are labels, not wrong content.** For the fee, processing time, unemployment and sponsor
+  income questions, the text correctly says the instructions don't give that (e.g. "they refer to Form G-1055 for
+  fees"), but the agent labels it `answer` because it cites the related passage. The old pipeline did the same for
+  the fee question. A clearer rule in the prompt raised out-of-scope from 1 to 3 of 8; the rest is a known
+  limitation. The H-1B question was declined correctly but without searching, which the strict rule counts as wrong.
+- **Follow-ups work.** "What about my mom?" after a question about a brother was searched as "U.S. citizen
+  petitioner, petition for mother, Form I-130". f01 (travel while the I-485 is pending) is partial for leaving out
+  the exceptions, the same detail the plain t08 question sometimes misses.
+- **Small talk is cheaper:** "awesome, thanks!" is one model call ($0.0005) instead of a search and an answer.
+  Questions cost a bit more than before ($0.0019 vs $0.0013), because the agent's instructions are longer and the
+  passages go back to the model as a tool result.
+- Both prompt changes came after looking at these 88 messages, so this is not a held-out result.
+
 ## Repository layout
 
 ```
@@ -500,12 +584,16 @@ immigration_helper/
   models.py     FormId, Chunk
   ingestion/    PDF reading, chunking, chunk storage
   retrieval/    Retriever interface; keyword, embedding and hybrid search; query rewriting; form filter
-  answering/    grounded answers: prompt, structured output, citation checks; the Assistant shared by terminal and web
+  answering/    the search agent (tool calling), its prompt, citation checks; the Assistant shared by terminal and web
   evaluation/   evaluation set, retrieval metrics, LLM-as-judge, evaluation commands
-  api/          FastAPI app for the web chat (POST /api/ask)
+  api/          FastAPI app for the web chat: login and chat endpoints
+  accounts/     sign-up, log-in, sessions, password hashing
+  history/      saved conversations: ChatService and its data types
+  storage/      all PostgreSQL access (users, sessions, conversations, forms)
 results/        saved evaluation runs (JSON) and hand-grading sheets (CSV)
 tests/
-web/            Next.js chat page (app/chat.tsx, lib/ask.ts)
+web/            Next.js app: login, chat list and chat (app/), API client (lib/api.ts)
+db/schema.sql   PostgreSQL tables; docker-compose.yml runs the database
 data/
   forms/      official USCIS PDFs (see data/README.md)
   personal/   user's own documents (git-ignored)
@@ -528,6 +616,7 @@ data/
 - [x] Check the judge against human grades on a sample (87% agreement on 15 answers)
 - [x] Web chat: FastAPI + Next.js
 - [ ] Reranking (optional)
-- [ ] Chat history (PostgreSQL) and follow-up questions
+- [x] Chat history with login (PostgreSQL)
+- [x] Search agent with tool calling: follow-up questions and small talk
 - [ ] Form review for uploaded forms
 - [ ] Cost measurements, screenshots, report and slides

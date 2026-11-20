@@ -1,7 +1,7 @@
 """Scores a retriever on the evaluation set: Recall@k and mean reciprocal rank, by question style."""
 from dataclasses import dataclass
 
-from immigration_helper.evaluation.eval_set import EvalQuestion
+from immigration_helper.evaluation.eval_set import EvalQuestion, QuestionStyle
 from immigration_helper.models import Chunk
 from immigration_helper.retrieval import Retriever
 
@@ -39,10 +39,12 @@ class RetrievalSummary:
 
 
 class RetrievalEvaluator:
-    """Runs every answerable question through a retriever; out-of-scope questions have nothing to find."""
+    """Runs every plain and jargon question through a retriever. Out-of-scope and conversation messages have
+    nothing to find, and follow-ups only make sense with the earlier question, so they're judged on answers only."""
 
     def __init__(self, questions: list[EvalQuestion], chunks: list[Chunk], k: int = 10):
-        self._questions = [question for question in questions if question.target]
+        self._questions = [question for question in questions
+                           if question.style in (QuestionStyle.PLAIN, QuestionStyle.JARGON)]
         self._relevant = {
             question.target.id: frozenset(question.target.relevant_chunk_ids(chunks)) for question in self._questions
         }

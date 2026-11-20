@@ -1,4 +1,4 @@
-from immigration_helper.answering.answer import Answer, Citation
-from immigration_helper.answering.answerer import Answerer
+from immigration_helper.answering.agent import Agent, InstructionSearch, PriorMessage
+from immigration_helper.answering.answer import Answer, Citation, ReplyKind
 
-__all__ = ["Answer", "Answerer", "Citation"]
+__all__ = ["Agent", "Answer", "Citation", "InstructionSearch", "PriorMessage", "ReplyKind"]

@@ -7,6 +7,15 @@ from immigration_helper.chat_model import NO_USAGE, ChatModel, ChatUsage
 from immigration_helper.retrieval.retriever import Retriever, ScoredChunk
 
 # The examples use forms outside the loaded instructions (I-90, I-129F) so they don't leak evaluation answers.
+# The search agent's prompt uses them too.
+QUERY_EXAMPLES = """\
+Question: I lost my green card. How do I replace it?
+Query: replace lost Permanent Resident Card (Form I-551) of a lawful permanent resident, Form I-90 Application \
+to Replace Permanent Resident Card
+
+Question: Can my boyfriend from abroad come here so we can get married?
+Query: U.S. citizen petitioner, petition for alien fiancé(e), K-1 nonimmigrant fiancé(e) visa, Form I-129F"""
+
 REWRITE_PROMPT = """\
 You turn a person's question about U.S. immigration paperwork into a search query for the official USCIS \
 form instructions (Forms I-130, I-131, I-485 and I-765).
@@ -17,12 +26,7 @@ forms, and form numbers or eligibility categories when you are confident of them
 person's situation. Do not answer the question, and do not add facts about the person that they didn't state.
 
 Examples:
-Question: I lost my green card. How do I replace it?
-Query: replace lost Permanent Resident Card (Form I-551) of a lawful permanent resident, Form I-90 Application \
-to Replace Permanent Resident Card
-
-Question: Can my boyfriend from abroad come here so we can get married?
-Query: U.S. citizen petitioner, petition for alien fiancé(e), K-1 nonimmigrant fiancé(e) visa, Form I-129F"""
+""" + QUERY_EXAMPLES
 
 REWRITE_SCHEMA = {
     "type": "object",

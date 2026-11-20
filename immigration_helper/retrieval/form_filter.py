@@ -30,7 +30,12 @@ class FormFilterRetriever:
         return named & self._known_forms  # forms we don't have (e.g. I-864) would filter out everything
 
     def search(self, query: str, k: int) -> list[ScoredChunk]:
-        forms = self.forms_named_in(query)
+        return self.search_named(query, k, named_by=query)
+
+    def search_named(self, query: str, k: int, named_by: str) -> list[ScoredChunk]:
+        """Searches with ``query`` but filters by the forms named in ``named_by``, e.g. the user's own words when the
+        query also contains text an LLM wrote (which can name the wrong form)."""
+        forms = self.forms_named_in(named_by)
         if not forms:
             return self._base.search(query, k)
         results = self._base.search(query, max(k, self._candidates))

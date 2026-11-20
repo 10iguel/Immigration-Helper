@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "USCIS Form Helper",
+  title: "ClearPath for Immigration",
   description: "Answers about USCIS Forms I-130, I-131, I-485 and I-765, with sources from the official instructions.",
 };
 
