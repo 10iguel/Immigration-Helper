@@ -1,0 +1,28 @@
+.workspace {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.workspace > * {
+  min-width: 0; /* let long chat titles shrink instead of widening the page */
+}
+
+.status {
+  margin: 24px auto 0;
+  max-width: 400px;
+  color: var(--muted);
+}
+
+@media (max-width: 720px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .workspace > nav {
+    max-height: 190px;
+  }
+}
