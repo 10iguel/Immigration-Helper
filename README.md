@@ -1,7 +1,54 @@
-# Immigration Helper (USCIS Form Helper)
+# ClearPath for Immigration
 
 > **Disclaimer:** This project is a class project, not legal advice. Always confirm answers
 > against the official instructions on [uscis.gov](https://www.uscis.gov) or with an immigration attorney.
+
+## Project overview
+
+### Purpose
+Immigration paperwork is stressful, and one mistake can delay a case for months. The official USCIS instructions are
+long PDFs full of legal terms: people say "green card" or "work permit", but the instructions say "adjustment of
+status" and "employment authorization". ClearPath answers questions in plain words using only the official
+instructions for Forms I-130, I-131, I-485 and I-765, shows the form, page and section each answer comes from, and
+says "the instructions don't cover this" instead of guessing.
+
+
+### Goals
+| Goal                                                                                                                   | Status                                       |
+|------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|
+| Answer questions from the official instructions, with citations (RAG with embeddings)                                  | Done: about 95% correct on 82 test questions |
+| Measure everything: retrieval metrics, an LLM judge, and a hand check of the judge                                     | Done                                         |
+| Web chat page                                                                                                          | Done: Next.js + FastAPI                      |
+| Chat history, so users can come back and ask follow-up questions                                                       | Planned (PostgreSQL)                         |
+| Form review: users upload a filled-out form and get a list of errors or missing information before sending it to USCIS | Planned                                      |
+
+### Initial ERD
+<!-- Add your ERD image: save it as docs/images/erd.png (or change the path below) -->
+![Initial ERD](docs/images/erd.png)
+
+The tables for users, chat history and form review are in [`db/schema.sql`](db/schema.sql). The instruction passages
+and their embeddings stay in Chroma and `data/index/chunks.jsonl`.
+
+### System design
+<!-- Add your system design image: save it as docs/images/system-design.png (or change the path below) -->
+![System design](docs/images/system-design.png)
+
+Browser (Next.js chat page) → Next.js server → FastAPI (Python) → Assistant pipeline (rewrite the question, search
+Chroma, answer with GPT-4.1-mini from the top 8 passages, check the citations) → reply with sources. PostgreSQL will
+store users, chats and uploaded forms.
+
+## Project log
+
+| Date       | What                                                                                                                                                     | Hours |
+|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| 11/2/2026  | Chose the project and planned it; created the GitHub repo                                                                                                | 4     |
+| 11/5/2026  | Downloaded the USCIS instruction PDFs; built PDF reading and section-aware chunking, with tests                                                          | 4     |
+| 11/7/2026  | Built the evaluation set (31 topics, plain and jargon questions); compared keyword search with OpenAI embeddings in Chroma; first answers with citations | 4     |
+| 11/14/2026 | Added query rewriting, hybrid search and a form filter (each measured); built the LLM-as-judge; full answer evaluation (95% correct)                     | 4     |
+| 11/15/2026 | Checked the judge by hand (87% agreement); fixed a test-set mistake; added held-out questions (92% correct); fixed a chunking bug                        | 4     |
+| 11/18/2026 | Built the web chat: FastAPI endpoint and Next.js page                                                                                                    | 4     |
+| 11/19/2026 | Prepared the pitch; drew the system design and ERD; designed the PostgreSQL schema for chat history and form review                                      | 4     |
+| **Total**  |                                                                                                                                                          | 4     |
 
 ## Problem
 
@@ -15,8 +62,9 @@ form-specific questions, which leads to costly mistakes.
 1. **Form Q&A (core concept: Embeddings / RAG)** — answers questions about a form using only the
    official USCIS instructions, and cites the form, Part and edition date the answer came from.
    If the retrieved text doesn't support an answer, it says so instead of guessing.
-2. **Document vault** — keeps the user's recurring documents (passport, I-94, green card,
-   receipt notices) locally so the same data can be reused across forms.
+2. **Chat history** (planned): conversations are saved per user, so they can come back and ask follow-up questions.
+3. **Form review** (planned): users upload a filled-out form and get a list of errors or missing information,
+   each explained with the instruction it comes from, before they send it to USCIS.
 
 ## Retrieval design
 
@@ -480,5 +528,6 @@ data/
 - [x] Check the judge against human grades on a sample (87% agreement on 15 answers)
 - [x] Web chat: FastAPI + Next.js
 - [ ] Reranking (optional)
-- [ ] Document vault
+- [ ] Chat history (PostgreSQL) and follow-up questions
+- [ ] Form review for uploaded forms
 - [ ] Cost measurements, screenshots, report and slides
