@@ -3,11 +3,12 @@
 --
 -- Design decisions (agreed 2026-11-19):
 --   * Login with email + password; only a password hash is stored. Emails are stored lowercase.
---   * Login sessions live in user_session (added when building the chat history, 2026-11-20).
+--   * Login sessions live in user_session (added when building the chat history).
 --   * Questions and answers share one message table, ordered by time, with a role column.
 --   * Citations keep a copy of the source label as the user saw it, because chunk IDs change when the PDFs are
 --     re-chunked (the t36 fix shifted every I-130 chunk ID by one).
---   * Uploaded PDFs are files on disk; the database stores only their path.
+--   * Uploaded forms are read in memory and never kept: only the list of issues found is stored (2026-11-19;
+--     the first design kept the PDF on disk).
 --   * Deleting a user deletes everything they own (ON DELETE CASCADE), so users can remove their data.
 --   * Personal values from uploaded forms (A-Number, SSN, ...) are never stored here; issues point to a location.
 
@@ -70,12 +71,8 @@ CREATE TABLE uploaded_form (
     upload_id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id           BIGINT NOT NULL REFERENCES app_user (user_id) ON DELETE CASCADE,
     form_id           TEXT NOT NULL REFERENCES uscis_form (form_id),
-    original_filename TEXT NOT NULL,
-    storage_path      TEXT NOT NULL UNIQUE,  -- file on disk; delete it together with this row
-    status            TEXT NOT NULL DEFAULT 'uploaded'
-                      CHECK (status IN ('uploaded', 'checking', 'checked', 'failed')),
-    uploaded_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
-    checked_at        TIMESTAMPTZ
+    original_filename TEXT NOT NULL,  -- shown in the user's list; the file itself is not kept
+    uploaded_at       TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX uploaded_form_by_user ON uploaded_form (user_id, uploaded_at DESC);
 

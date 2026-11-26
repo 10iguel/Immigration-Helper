@@ -37,10 +37,7 @@ class AnswerTarget:
             raise ValueError(f"Answer target {self.id} needs at least one answer phrase")
 
     def is_answered_by(self, chunk: Chunk) -> bool:
-        if chunk.form != self.form:
-            return False
-        text = _normalize(chunk.text)
-        return any(_normalize(phrase) in text for phrase in self.answer_phrases)
+        return chunk.form == self.form and any(chunk.contains(phrase) for phrase in self.answer_phrases)
 
     def relevant_chunk_ids(self, chunks: list[Chunk]) -> list[str]:
         return [chunk.id for chunk in chunks if self.is_answered_by(chunk)]
@@ -106,7 +103,3 @@ class EvalSetStore:
             answer_phrases=tuple(record["answer_phrases"]),
             reference_answer=record["reference_answer"],
         )
-
-
-def _normalize(text: str) -> str:
-    return " ".join(text.lower().split())

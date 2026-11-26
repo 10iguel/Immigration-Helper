@@ -1,0 +1,18 @@
+# Local PostgreSQL for ClearPath's users and chat history:  docker compose up -d
+# The schema in db/schema.sql runs only the first time (when the data volume is empty).
+# The default password is for local development only; the port is reachable from this computer only.
+services:
+  db:
+    image: postgres:17.5
+    environment:
+      POSTGRES_DB: clearpath
+      POSTGRES_USER: clearpath
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-clearpath}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+volumes:
+  pgdata:

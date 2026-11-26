@@ -8,6 +8,8 @@
   --on-accent: #ffffff;
   --error: #a4262c;
   --error-bg: #fdecec;
+  --warning: #8a5300;
+  --warning-bg: #fff3dc;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,6 +23,8 @@
     --on-accent: #0d1117;
     --error: #ff8a8a;
     --error-bg: #3a1d1f;
+    --warning: #f2b75b;
+    --warning-bg: #3a2c12;
   }
 }
 

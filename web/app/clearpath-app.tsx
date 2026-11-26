@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError, ConversationSummary, getMe, listConversations, logOut, UserInfo } from "@/lib/api";
 import { AuthForm } from "./auth-form";
 import { Chat } from "./chat";
+import { ReviewPanel } from "./review-panel";
 import styles from "./clearpath-app.module.css";
 import { Sidebar } from "./sidebar";
 
@@ -43,6 +44,7 @@ function Workspace({ user, onLoggedOut }: { user: UserInfo; onLoggedOut: () => v
   // highlights the current chat, so saving the first question doesn't reload the chat on screen.
   const [opened, setOpened] = useState<{ key: number; id: number | null }>({ key: 0, id: null });
   const [activeId, setActiveId] = useState<number | null>(null);
+  const [reviewing, setReviewing] = useState(false);
 
   const refresh = useCallback(() => {
     listConversations()
@@ -58,6 +60,7 @@ function Workspace({ user, onLoggedOut }: { user: UserInfo; onLoggedOut: () => v
   function open(id: number | null) {
     setOpened((current) => ({ key: current.key + 1, id }));
     setActiveId(id);
+    setReviewing(false);
   }
 
   function onSaved(id: number) {
@@ -82,9 +85,13 @@ function Workspace({ user, onLoggedOut }: { user: UserInfo; onLoggedOut: () => v
         error={listError}
         onSelect={open}
         onNewChat={() => open(null)}
+        reviewing={reviewing}
+        onCheckForm={() => setReviewing(true)}
         onLogOut={onLogOut}
       />
-      <Chat key={opened.key} conversationId={opened.id} onSaved={onSaved} onSessionExpired={onLoggedOut} />
+      {reviewing
+        ? <ReviewPanel onSessionExpired={onLoggedOut} />
+        : <Chat key={opened.key} conversationId={opened.id} onSaved={onSaved} onSessionExpired={onLoggedOut} />}
     </div>
   );
 }

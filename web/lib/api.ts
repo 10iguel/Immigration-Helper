@@ -45,6 +45,35 @@ export const getConversation = (id: number) => request<ConversationDetail>(`/api
 export const ask = (question: string, conversationId: number | null) =>
   post<AskResponse>("/api/ask", { question, conversation_id: conversationId });
 
+export type ReviewIssue = {
+  severity: "error" | "warning";
+  location: string; // e.g. "Part 2, Item Number 16"
+  message: string;
+  source: string | null; // the instruction passage behind the check
+};
+
+export type ReviewSummary = {
+  id: number;
+  form: string;
+  filename: string;
+  checked_at: string;
+  errors: number;
+  warnings: number;
+};
+
+export type ReviewDetail = ReviewSummary & { issues: ReviewIssue[] };
+
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // same limit the API enforces
+
+export const checkForm = (file: File) => {
+  const body = new FormData(); // the browser sets the multipart Content-Type itself
+  body.append("file", file);
+  return request<ReviewDetail>("/api/reviews", { method: "POST", body });
+};
+export const listReviews = () => request<ReviewSummary[]>("/api/reviews");
+export const getReview = (id: number) => request<ReviewDetail>(`/api/reviews/${id}`);
+export const deleteReview = (id: number) => request<void>(`/api/reviews/${id}`, { method: "DELETE" });
+
 function post<T>(path: string, body: object): Promise<T> {
   return request<T>(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 }

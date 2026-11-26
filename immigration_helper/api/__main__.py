@@ -13,7 +13,14 @@ from immigration_helper.answering.assistant import Assistant
 from immigration_helper.api.app import create_app
 from immigration_helper.history import ChatService
 from immigration_helper.ingestion import ChunkStore
-from immigration_helper.storage import Database, PostgresConversationStore, PostgresUserStore, sync_forms
+from immigration_helper.review import FormReviewer, ReviewService
+from immigration_helper.storage import (
+    Database,
+    PostgresConversationStore,
+    PostgresReviewStore,
+    PostgresUserStore,
+    sync_forms,
+)
 
 
 def main() -> None:
@@ -25,12 +32,14 @@ def main() -> None:
 
     logging.basicConfig(level=logging.INFO)
     database = Database(config.DATABASE_URL)
-    forms = sync_forms(database, ChunkStore(config.CHUNKS_PATH).load())
+    chunks = ChunkStore(config.CHUNKS_PATH).load()
+    forms = sync_forms(database, chunks)
     logging.getLogger(__name__).info("Database ready; %d forms in uscis_form", forms)
 
     accounts = AccountService(PostgresUserStore(database))
     chats = ChatService(Assistant.build(), PostgresConversationStore(database))
-    uvicorn.run(create_app(accounts, chats, args.secure_cookies), host=args.host, port=args.port)
+    reviews = ReviewService(FormReviewer(chunks), PostgresReviewStore(database))
+    uvicorn.run(create_app(accounts, chats, reviews, args.secure_cookies), host=args.host, port=args.port)
 
 
 if __name__ == "__main__":

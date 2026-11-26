@@ -1,4 +1,4 @@
-"""HTTP API for the web chat page. It only translates between HTTP/JSON and the account and chat services."""
+"""HTTP API for the web app. It only translates between HTTP/JSON and the account, chat and review services."""
 import logging
 from datetime import datetime
 from typing import Annotated
@@ -17,7 +17,9 @@ from immigration_helper.accounts import (
 )
 from immigration_helper.accounts.passwords import MAX_PASSWORD_LENGTH
 from immigration_helper.accounts.service import SESSION_LIFETIME
+from immigration_helper.api.reviews import review_routes
 from immigration_helper.history import ChatService, ChatTurn, Conversation, ConversationNotFoundError, ConversationSummary
+from immigration_helper.review import ReviewService
 
 SESSION_COOKIE = "clearpath_session"
 _MAX_QUESTION_CHARS = 1000
@@ -103,7 +105,8 @@ class ConversationResponse(BaseModel):
         ])
 
 
-def create_app(accounts: AccountService, chats: ChatService, secure_cookies: bool = False) -> FastAPI:
+def create_app(accounts: AccountService, chats: ChatService, reviews: ReviewService,
+               secure_cookies: bool = False) -> FastAPI:
     """``secure_cookies`` must be True when the site is served over HTTPS (anything beyond localhost)."""
     app = FastAPI(title="ClearPath API")
 
@@ -172,4 +175,5 @@ def create_app(accounts: AccountService, chats: ChatService, secure_cookies: boo
             logger.exception("Answering failed for a question")
             raise HTTPException(status_code=502, detail="The assistant could not answer right now. Please try again.")
 
+    app.include_router(review_routes(reviews, current_user))
     return app

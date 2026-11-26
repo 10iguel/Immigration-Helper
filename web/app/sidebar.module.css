@@ -20,6 +20,21 @@
   cursor: pointer;
 }
 
+.checkForm {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.checkForm:hover {
+  border-color: var(--accent);
+}
+
 .list {
   flex: 1;
   min-height: 0;

@@ -1,3 +1,7 @@
+import functools
+from datetime import date
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 from openai import APIConnectionError
@@ -9,7 +13,11 @@ from immigration_helper.api import SESSION_COOKIE, create_app
 from immigration_helper.history import ChatService
 from immigration_helper.models import FormId
 from immigration_helper.retrieval import EmbeddingUsage
-from tests.fakes import PASSAGE, InMemoryConversationStore, InMemoryUserStore, StubAssistant
+from immigration_helper.ingestion import InstructionReader, SectionChunker
+from immigration_helper.review import FormReviewer, ReviewService
+from immigration_helper.review import i765_rules as fields
+from tests.fakes import PASSAGE, InMemoryConversationStore, InMemoryReviewStore, InMemoryUserStore, StubAssistant
+from tests.form_factory import CORRECT_TEXT, fill_i765
 from tests.test_answering import RecordingRetriever, ScriptedModel, reply
 
 
@@ -57,7 +65,14 @@ CREDENTIALS = {"email": "ana@example.com", "password": "correct horse battery"}
 
 def make_client(assistant: StubAssistant | None = None) -> TestClient:
     chats = ChatService(assistant or StubAssistant(), InMemoryConversationStore())
-    return TestClient(create_app(AccountService(InMemoryUserStore()), chats))
+    reviews = ReviewService(review_reviewer(), InMemoryReviewStore())
+    return TestClient(create_app(AccountService(InMemoryUserStore()), chats, reviews))
+
+
+@functools.cache
+def review_reviewer() -> FormReviewer:
+    chunks = SectionChunker().chunk(InstructionReader().read(Path("data/forms/i-765instr.pdf")))
+    return FormReviewer(chunks, today=lambda: date(2026, 11, 20))
 
 
 def signed_up_client(assistant: StubAssistant | None = None) -> TestClient:
@@ -153,3 +168,45 @@ def test_ask_reports_a_failed_answer_without_leaking_details():
 
     assert response.status_code == 502
     assert "openai" not in response.text.lower()
+
+
+def upload(client: TestClient, data: bytes, name: str = "my-i765.pdf"):
+    return client.post("/api/reviews", files={"file": (name, data, "application/pdf")})
+
+
+def test_reviewing_a_form_saves_only_the_issues_and_can_be_listed_opened_and_deleted():
+    client = signed_up_client()
+
+    review = upload(client, fill_i765({**CORRECT_TEXT, fields.DATE_OF_BIRTH: "1990-05-14"}), "C:\\Users\\me\\i765.pdf")
+
+    assert review.status_code == 201
+    body = review.json()
+    assert (body["form"], body["filename"], body["errors"], body["warnings"]) == ("I-765", "i765.pdf", 1, 0)
+    assert body["issues"][0]["location"] == "Part 2, Item Number 16"
+    assert body["issues"][0]["source"].startswith("Form I-765 Instructions (08/21/25)")
+    assert "1990-05-14" not in review.text
+    assert [r["id"] for r in client.get("/api/reviews").json()] == [body["id"]]
+    assert client.get(f"/api/reviews/{body['id']}").json()["issues"] == body["issues"]
+    assert client.delete(f"/api/reviews/{body['id']}").status_code == 204
+    assert client.get(f"/api/reviews/{body['id']}").status_code == 404
+
+
+def test_review_rejects_files_it_cannot_check():
+    client = signed_up_client()
+
+    assert upload(client, b"not a pdf").status_code == 422
+    assert "can check Form I-765" in upload(client, Path("data/forms/i-130.pdf").read_bytes()).json()["detail"]
+    assert upload(client, b"%PDF" + b"0" * (5 * 1024 * 1024)).status_code == 413
+    assert client.get("/api/reviews").json() == []
+
+
+def test_reviews_need_login_and_belong_to_one_user():
+    client = signed_up_client()
+    anas = upload(client, fill_i765()).json()["id"]
+    client.cookies.clear()
+
+    assert upload(client, fill_i765()).status_code == 401
+    client.post("/api/auth/signup", json={"email": "bo@example.com", "password": "another password"})
+    assert client.get(f"/api/reviews/{anas}").status_code == 404
+    assert client.delete(f"/api/reviews/{anas}").status_code == 404
+    assert client.get("/api/reviews").json() == []

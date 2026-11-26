@@ -44,3 +44,11 @@ class Chunk:
 
     def word_count(self) -> int:
         return len(self.text.split())
+
+    def contains(self, phrase: str) -> bool:
+        """Whether the passage contains the phrase, ignoring case and line breaks (labels copied from the PDFs)."""
+        return _normalize(phrase) in _normalize(self.text)
+
+
+def _normalize(text: str) -> str:
+    return " ".join(text.lower().split())

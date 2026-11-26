@@ -21,7 +21,7 @@ says "the instructions don't cover this" instead of guessing.
 | Web chat page                                                                                                          | Done: Next.js + FastAPI                      |
 | Chat history: log in and come back to saved chats                                                                      | Done: PostgreSQL                             |
 | Follow-up questions and small talk: a search agent with tool calling                                                   | Done: see "Search agent"                     |
-| Form review: users upload a filled-out form and get a list of errors or missing information before sending it to USCIS | Planned                                      |
+| Form review: users upload a filled-out form and get a list of errors or missing information before sending it to USCIS | Done for Form I-765: see "Form review"       |
 
 ### Initial ERD
 <!-- Add your ERD image: save it as docs/images/erd.png (or change the path below) -->
@@ -52,6 +52,7 @@ users, login sessions and chats (and later the uploaded forms).
 | 11/19/2026 | Prepared the pitch; drew the system design and ERD; designed the PostgreSQL schema for chat history and form review                                      | 4     |
 | 11/19/2026 | Built chat history: PostgreSQL in Docker, sign-up and log-in, saved chats with their sources, chat list in the web page                                   |       |
 | 11/19/2026 | Replaced the fixed pipeline with a search agent (tool calling): follow-up questions and small talk; measured on 88 messages                               |       |
+| 11/19/2026 | Built form review for Form I-765: reads the fillable PDF, 11 checks with citations, saves only the problems                                               |       |
 | **Total**  |                                                                                                                                                          | 4     |
 
 ## Problem
@@ -67,8 +68,8 @@ form-specific questions, which leads to costly mistakes.
    official USCIS instructions, and cites the form, Part and edition date the answer came from.
    If the retrieved text doesn't support an answer, it says so instead of guessing.
 2. **Chat history**: users log in, and their conversations are saved so they can come back to them.
-3. **Form review** (planned): users upload a filled-out form and get a list of errors or missing information,
-   each explained with the instruction it comes from, before they send it to USCIS.
+3. **Form review** (Form I-765 so far): users upload their filled-in form and get a list of errors and missing
+   information, each with the instruction it comes from, before they send it to USCIS.
 
 ## Retrieval design
 
@@ -161,6 +162,8 @@ npm --prefix web run dev   # the chat page on http://localhost:3000
   | `POST /api/auth/logout`, `GET /api/auth/me` | End the session; who is logged in |
   | `GET /api/conversations`, `GET /api/conversations/{id}` | My chats, newest first; one chat with its messages and sources |
   | `POST /api/ask` `{"question", "conversation_id"?}` | Answer and save into a chat (a new one when no ID is given) |
+  | `POST /api/reviews` (file upload) | Check a filled-in Form I-765; saves only the problems found |
+  | `GET /api/reviews`, `GET /api/reviews/{id}`, `DELETE /api/reviews/{id}` | My checks; one check with its problems; delete it |
 
   Everything except sign-up and log-in needs the login cookie (401 otherwise). Someone else's chat answers 404, the
   same as a chat that doesn't exist. Questions must be 1 to 1000 characters (422 otherwise). If OpenAI fails, the
@@ -575,6 +578,47 @@ searching. Two full runs of all 88 messages on 2026-11-19
   passages go back to the model as a tool result.
 - Both prompt changes came after looking at these 88 messages, so this is not a held-out result.
 
+## Form review
+
+Users upload their filled-in **Form I-765** (the official fillable PDF) and get a list of problems to fix before
+mailing it, each with the instruction passage it comes from ([`review/`](immigration_helper/review)).
+
+- **Checks run in code, not by AI.** The PDF's form fields are read directly (161 named fields, e.g.
+  `Line19_DOB`), and 11 fixed rules check them. The same form always gets the same result, it costs nothing, and
+  nothing can be invented. An AI that "reviews" a legal form could miss an error or report a fake one, either of
+  which could hurt an application.
+
+  | Location on Form I-765 | Check | Severity |
+  |---|---|---|
+  | Form footer | The form's edition matches the loaded instructions (08/21/25) | warning |
+  | Part 1, Item 1 | Exactly one reason for applying is selected | error |
+  | Part 2, Items 1.a–1.b | Family name and given name are filled in | error |
+  | Part 2, Items 5.a–5.f | Mailing street, city, state and ZIP are filled in; the ZIP code has 5 digits | error |
+  | Part 2, Item 8 | The A-Number has 9 digits, or "N/A" (empty: a reminder to type "N/A") | error / warning |
+  | Part 2, Items 10–11 | Exactly one box for sex and one for marital status | error |
+  | Part 2, Item 16 | The date of birth is a real mm/dd/yyyy date in the past | error |
+  | Part 2, Item 27 | The eligibility category is filled in and looks like (c)(9) or (a)(12) | error |
+  | Part 3, Item 3 | The daytime phone number has 10 digits | error |
+  | Part 3, Items 7.a–7.b | Nothing typed in the signature box; the signature date is a real, past date (empty: a reminder to sign by hand) | error / warning |
+
+- **Every check cites its instructions.** Each rule holds a phrase copied from the I-765 instructions (the same
+  phrase matching the evaluation set uses), resolved to a citation label when the API starts. If a phrase stops
+  matching (e.g. a new edition), startup fails instead of showing a wrong source.
+- **Privacy: the form is never kept.** The PDF is read in memory and discarded; only the problems are saved
+  (`uploaded_form` and `form_issue`), and messages name a place on the form, never the value typed there. This
+  replaced the first design, which stored the PDF on disk ([`db/migrations/002_review_without_files.sql`](db/migrations/002_review_without_files.sql)).
+  Users can delete a check, and deleting the account deletes all of them.
+- **What it rejects, with a clear message:** files that aren't PDFs, PDFs without fillable fields (scans or
+  printed forms), other forms (only I-765 is supported so far), and files over 5 MB.
+- **Tested with fake filled forms.** `tests/form_factory.py` fills the real I-765 PDF with made-up data. A correct
+  form gets **no issues**, and each of **17 planted mistakes** (two reasons checked, a 4-digit ZIP, an A-Number with
+  a letter, 1990-05-14 instead of 05/14/1990, a date in the future, a typed signature, …) is found **at exactly its
+  location and nowhere else**, with none of the planted values in the stored message. In the browser, a form with
+  4 planted mistakes showed exactly 2 errors and 2 warnings, and the database held only those 4 messages.
+- **Limits of v1:** it checks the format and completeness of key fields, not eligibility (e.g. whether a (c)(9)
+  applicant really has a pending I-485), the conditional items for specific categories (Items 28–31), or the
+  evidence to attach. A clean result doesn't mean USCIS will accept the form, and the page says so.
+
 ## Repository layout
 
 ```
@@ -589,7 +633,8 @@ immigration_helper/
   api/          FastAPI app for the web chat: login and chat endpoints
   accounts/     sign-up, log-in, sessions, password hashing
   history/      saved conversations: ChatService and its data types
-  storage/      all PostgreSQL access (users, sessions, conversations, forms)
+  storage/      all PostgreSQL access (users, sessions, conversations, forms, reviews)
+  review/       form review: reading fillable PDFs, the I-765 checks, the review service
 results/        saved evaluation runs (JSON) and hand-grading sheets (CSV)
 tests/
 web/            Next.js app: login, chat list and chat (app/), API client (lib/api.ts)
@@ -618,5 +663,5 @@ data/
 - [ ] Reranking (optional)
 - [x] Chat history with login (PostgreSQL)
 - [x] Search agent with tool calling: follow-up questions and small talk
-- [ ] Form review for uploaded forms
+- [x] Form review for uploaded forms (Form I-765: 11 checks, 17 planted mistakes all found)
 - [ ] Cost measurements, screenshots, report and slides
